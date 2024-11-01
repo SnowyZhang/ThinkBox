@@ -1,11 +1,13 @@
-package com.snowy.thinkbox;
+package com.snowy.thinkbox.config;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
+@ComponentScan("com.snowy")
 @SpringBootApplication
 public class ThinkBoxApplication {
     private static final Logger LOG = LoggerFactory.getLogger(ThinkBoxApplication.class);
