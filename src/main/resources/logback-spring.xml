@@ -1,40 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="false">
-    <!--日志文件的存储位置-->
-    <property name="LOG_HOME" value="./logs"/>
+<configuration>
+    <!-- 设置日志文件路径 -->
+    <property name="PATH" value="./log" />
 
-    <!--控制台输出-->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化日志输出：%d表示日期；%thread表示线程名；%-5level表示日志级别，且从左显示5个字符宽度；
-            %logger表示日志输出位置；%msg表示日志内容；%n表示换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg %n</pattern>
-            <charset>UTF-8</charset>
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{ss.SSS} %highlight(%-5level) %blue(%-30logger{30}:%-4line) %thread %green(%-18X{LOG_ID}) %msg%n</Pattern>
         </encoder>
     </appender>
 
-    <!--日志文件输出-->
-    <appender name="LOG_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- 追踪日志文件输出 -->
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${PATH}/trace.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_HOME}/log_%d{yyyy-MM-dd}.log</FileNamePattern>
-            <!--日志保留天数-->
-            <MaxHistory>180</MaxHistory>
+            <FileNamePattern>${PATH}/trace.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxFileSize>10MB</maxFileSize> <!-- 仅保留大小限制 -->
         </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化日志输出：%d表示日期；%thread表示线程名；%-5level表示日志级别，且从左显示5个字符宽度；
-            %logger表示日志输出位置；%msg表示日志内容；%n表示换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg %n</pattern>
-        </encoder>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <!--日志文件最大大小-->
-            <MaxFileSize>10MB</MaxFileSize>
-        </triggeringPolicy>
+        <layout>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-50logger{50}:%-4line %green(%-18X{LOG_ID}) %msg%n</pattern>
+        </layout>
     </appender>
 
-    <!--日志输出级别-->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${PATH}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${PATH}/error.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <maxFileSize>10MB</maxFileSize> <!-- 仅保留大小限制 -->
+        </rollingPolicy>
+        <layout>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-50logger{50}:%-4line %green(%-18X{LOG_ID}) %msg%n</pattern>
+        </layout>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+
+    <!-- 设置根日志级别和输出 -->
     <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="LOG_INFO"/>
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="TRACE_FILE" />
+        <appender-ref ref="ERROR_FILE" />
     </root>
 </configuration>
