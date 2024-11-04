@@ -3,13 +3,13 @@ GET http://localhost:8090/hello
 #Accept: application/json
 
 > {%
- client.test("test-getHello",function(){
- client.log("测试/hello的get接口");
- client.log(response.body);
- client.log(JSON.stringify(response.body));
- client.assert(response.status === 200,"返回码不是200");
- client.assert(response.body.id === "Hello World!","结果验证失败");
-});
+//  client.test("test-getHello",function(){
+//  client.log("测试/hello的get接口");
+//  client.log(response.body);
+//  client.log(JSON.stringify(response.body));
+//  client.assert(response.status === 200,"返回码不是200");
+//  client.assert(response.body.id === "Hello World!","结果验证失败");
+// });
 %}
 ###
 

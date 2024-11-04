@@ -1,0 +1,5 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+      exclude: application.yml,static/**,public/**
