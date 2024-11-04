@@ -40,7 +40,7 @@
 
 
     <!-- 设置根日志级别和输出 -->
-    <root level="TRACE">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="TRACE_FILE" />
         <appender-ref ref="ERROR_FILE" />
