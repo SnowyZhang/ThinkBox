@@ -1,5 +1,5 @@
 
-GET http://localhost:8090/ebook/list
+GET http://localhost:8090/ebook/list?name=spring
 #Accept: application/json
 
 ###
