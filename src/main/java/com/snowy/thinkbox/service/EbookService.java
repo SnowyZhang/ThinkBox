@@ -5,6 +5,7 @@ import com.snowy.thinkbox.domain.EbookExample;
 import com.snowy.thinkbox.mapper.EbookMapper;
 import com.snowy.thinkbox.req.EbookReq;
 import com.snowy.thinkbox.resp.EbookResp;
+import com.snowy.thinkbox.utils.CopyUtil;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,13 @@ public class EbookService {
         criteria.andNameLike("%" + ebookReq.getName() + "%");
         List<Ebook> ebookList =  ebookMapper.selectByExample(ebookExample);
 
-        List<EbookResp> ebookResps = new ArrayList<>();
-        for(Ebook ebook: ebookList) {
-            EbookResp ebookResp = new EbookResp();
-            BeanUtils.copyProperties(ebook,ebookResp);
-            ebookResps.add(ebookResp);
-        }
+//        List<EbookResp> ebookResps = new ArrayList<>();
+//        for(Ebook ebook: ebookList) {
+//            EbookResp ebookResp = new EbookResp();
+//            BeanUtils.copyProperties(ebook,ebookResp);
+//            ebookResps.add(ebookResp);
+//        }
+        List<EbookResp> ebookResps = CopyUtil.copyList(ebookList, EbookResp.class);
         return ebookResps;
     }
 }
