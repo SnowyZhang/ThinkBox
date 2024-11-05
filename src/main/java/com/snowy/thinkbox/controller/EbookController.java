@@ -1,6 +1,7 @@
 package com.snowy.thinkbox.controller;
 
 import com.snowy.thinkbox.domain.Ebook;
+import com.snowy.thinkbox.resp.CommonResp;
 import com.snowy.thinkbox.service.EbookService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,10 @@ public class EbookController {
 
 
     @GetMapping("/list")
-    public List<Ebook> List(){
-        return ebookService.list();
+    public CommonResp List(){
+        CommonResp<List<Ebook>> resp = new CommonResp<>();
+        List<Ebook> list = ebookService.list();
+        resp.setContent(list);
+        return resp;
     }
 }
