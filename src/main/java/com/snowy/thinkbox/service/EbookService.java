@@ -1,14 +1,17 @@
 package com.snowy.thinkbox.service;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.snowy.thinkbox.domain.Ebook;
 import com.snowy.thinkbox.domain.EbookExample;
 import com.snowy.thinkbox.mapper.EbookMapper;
 import com.snowy.thinkbox.req.EbookReq;
 import com.snowy.thinkbox.resp.EbookResp;
 import com.snowy.thinkbox.utils.CopyUtil;
+import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,9 @@ public class EbookService {
     public List<EbookResp> list(EbookReq ebookReq) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        criteria.andNameLike("%" + ebookReq.getName() + "%");
+        if (ObjectUtils.isEmpty(ebookReq.getName())) {
+            criteria.andNameLike("%" + ebookReq.getName() + "%");
+        }
         List<Ebook> ebookList =  ebookMapper.selectByExample(ebookExample);
 
 //        List<EbookResp> ebookResps = new ArrayList<>();
