@@ -48,35 +48,21 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
-        <template #footer>
-          <div>
-            <b>ant design vue</b>
-            footer part
-          </div>
-        </template>
+      <a-list item-layout="vertical" size="large"  :grid="{gutter:20,column:3}" :pagination="pagination" :data-source="ebooks">
         <template #renderItem="{ item }">
-          <a-list-item key="item.title">
+          <a-list-item key="item.name">
             <template #actions>
-          <span v-for="{ icon, text } in actions" :key="icon">
-            <component :is="icon" style="margin-right: 8px" />
-            {{ text }}
-          </span>
-            </template>
-            <template #extra>
-              <img
-                  width="272"
-                  alt="logo"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
-              />
+              <span v-for="{ icon, text } in actions" :key="icon">
+                <component :is="icon" style="margin-right: 8px" />
+                {{ text }}
+              </span>
             </template>
             <a-list-item-meta :description="item.description">
               <template #title>
-                <a :href="item.href">{{ item.title }}</a>
+                <a :href="item.href">{{ item.name }}</a>
               </template>
-              <template #avatar><a-avatar :src="item.avatar" /></template>
+              <template #avatar><a-avatar :src="item.cover" /></template>
             </a-list-item-meta>
-            {{ item.content }}
           </a-list-item>
         </template>
       </a-list>
@@ -107,12 +93,12 @@ export default defineComponent({
   setup(){
     console.log("setup");
     // eslint-disable-next-line
-    const ebooks = ref<{ [key: string]: any }>({});
+    const ebooks = ref<any[]>([]);
     const ebooksRef = reactive({books:[]});
     onMounted(()=>{
       console.log("onMounted");
-      axios.get("http://localhost:8090/ebook/list?name=spring").then((response)=>{
-        const  data = response.data;
+      axios.get("http://localhost:8090/ebook/list?name=java").then((response)=>{
+        const  data = response.data||[];
         ebooks.value = data.content;
         ebooksRef.books = data.content;
         console.log(response);
