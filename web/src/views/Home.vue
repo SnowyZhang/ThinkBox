@@ -56,9 +56,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {LaptopOutlined, NotificationOutlined, UserOutlined} from "@ant-design/icons-vue"; // @ is an alias to /src
-
+import axios from 'axios';
 export default defineComponent({
   name: 'Home',
+  setup(){
+    console.log("setup");
+    axios.get("http://localhost:8090/ebook/list?name=spring").then((response)=>{
+      console.log(response);
+    })
+  },
   components: {
     NotificationOutlined, UserOutlined, LaptopOutlined,
   },
