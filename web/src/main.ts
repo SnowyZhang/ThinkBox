@@ -9,6 +9,22 @@ import axios from "axios";
 
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 
+/*
+* axios 拦截器
+*/
+axios.interceptors.request.use(config => {
+  // 在发送请求之前做些什么
+  console.log('请求参数', config);
+  return config;
+},error => {
+  return Promise.reject(error);
+});
+axios.interceptors.response.use(response => {
+  console.log('响应参数', response);
+    return response;
+},error => {
+    return Promise.reject(error);
+});
 const  app = createApp(App);
 app.use(store).use(router).use(Antd).mount('#app');
 
