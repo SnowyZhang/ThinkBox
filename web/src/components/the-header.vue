@@ -1,5 +1,5 @@
 <template>
-  <a-layout-header class="header">
+  <a-layout-header class="header" style="padding-left: 100px">
     <div class="logo" />
     <a-menu
         v-model:selectedKeys="selectedKeys1"
