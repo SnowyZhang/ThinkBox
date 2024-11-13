@@ -8,6 +8,7 @@ import com.snowy.thinkbox.domain.EbookExample;
 import com.snowy.thinkbox.mapper.EbookMapper;
 import com.snowy.thinkbox.req.EbookReq;
 import com.snowy.thinkbox.resp.EbookResp;
+import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
@@ -28,13 +29,13 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq ebookReq) {
+    public PageResp<EbookResp> list(EbookReq ebookReq) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if (!ObjectUtils.isEmpty(ebookReq.getName())) {
             criteria.andNameLike("%" + ebookReq.getName() + "%");
         }
-        PageHelper.startPage(1, 2);
+        PageHelper.startPage(ebookReq.getPage(), ebookReq.getSize());
         List<Ebook> ebookList =  ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
@@ -47,6 +48,9 @@ public class EbookService {
 //            ebookResps.add(ebookResp);
 //        }
         List<EbookResp> ebookResps = CopyUtil.copyList(ebookList, EbookResp.class);
-        return ebookResps;
+        PageResp<EbookResp> ebookPageResp = new PageResp<>();
+        ebookPageResp.setTotal(pageInfo.getTotal());
+        ebookPageResp.setList(ebookResps);
+        return ebookPageResp;
     }
 }
