@@ -3,8 +3,12 @@ package com.snowy.thinkbox.mapper;
 import com.snowy.thinkbox.domain.Ebook;
 import com.snowy.thinkbox.domain.EbookExample;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+//@Mapper
 public interface EbookMapper {
     long countByExample(EbookExample example);
 
@@ -16,6 +20,7 @@ public interface EbookMapper {
 
     int insertSelective(Ebook row);
 
+//    @Select("SELECT * FROM ebook WHERE name LIKE CONCAT('%', #{name}, '%')")
     List<Ebook> selectByExample(EbookExample example);
 
     Ebook selectByPrimaryKey(Long id);
