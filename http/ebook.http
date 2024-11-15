@@ -3,3 +3,6 @@ GET http://localhost:8090/ebook/list?page=1&size=1
 #Accept: application/json
 
 ###
+
+POST http://localhost:8090/ebook/save
+{id: 1, title: "Java", author: "John", price: 100}

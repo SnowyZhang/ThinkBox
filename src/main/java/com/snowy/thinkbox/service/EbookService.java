@@ -1,26 +1,23 @@
 package com.snowy.thinkbox.service;
 
-import ch.qos.logback.core.util.StringUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snowy.thinkbox.domain.Ebook;
 import com.snowy.thinkbox.domain.EbookExample;
 import com.snowy.thinkbox.mapper.EbookMapper;
-import com.snowy.thinkbox.req.EbookReq;
-import com.snowy.thinkbox.resp.EbookResp;
+import com.snowy.thinkbox.req.EbookQueryReq;
+import com.snowy.thinkbox.req.EbookSaveReq;
+import com.snowy.thinkbox.resp.EbookQueryResp;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
-import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 //import org.mybatis.logging.Logger;
 //import org.mybatis.logging.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,13 +26,13 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq ebookReq) {
+    public PageResp<EbookQueryResp> list(EbookQueryReq ebookQueryReq) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        if (!ObjectUtils.isEmpty(ebookReq.getName())) {
-            criteria.andNameLike("%" + ebookReq.getName() + "%");
+        if (!ObjectUtils.isEmpty(ebookQueryReq.getName())) {
+            criteria.andNameLike("%" + ebookQueryReq.getName() + "%");
         }
-        PageHelper.startPage(ebookReq.getPage(), ebookReq.getSize());
+        PageHelper.startPage(ebookQueryReq.getPage(), ebookQueryReq.getSize());
         List<Ebook> ebookList =  ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
@@ -47,11 +44,21 @@ public class EbookService {
 //            BeanUtils.copyProperties(ebook,ebookResp);
 //            ebookResps.add(ebookResp);
 //        }
-        List<EbookResp> ebookResps = CopyUtil.copyList(ebookList, EbookResp.class);
-        PageResp<EbookResp> ebookPageResp = new PageResp<>();
+        List<EbookQueryResp> ebookQueryResps = CopyUtil.copyList(ebookList, EbookQueryResp.class);
+        PageResp<EbookQueryResp> ebookPageResp = new PageResp<>();
         ebookPageResp.setTotal(pageInfo.getTotal());
-        ebookPageResp.setList(ebookResps);
+        ebookPageResp.setList(ebookQueryResps);
         return ebookPageResp;
     }
 
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if (ObjectUtils.isEmpty(req.getId())) {
+            // 新增
+            ebookMapper.insert(ebook);
+        } else {
+            // 更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
+    }
 }

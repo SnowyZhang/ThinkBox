@@ -36,6 +36,12 @@
           <template v-else-if="column.dataIndex === 'name'">
             名称
           </template>
+          <template v-else-if="column.dataIndex === 'category1Id'">
+            分类1
+          </template>
+          <template v-else-if="column.dataIndex === 'category2Id'">
+            分类2
+          </template>
           <template v-else-if="column.dataIndex === 'docCount'">
             文档数
           </template>
@@ -56,6 +62,12 @@
           </template>
           <template v-else-if="column.dataIndex === 'name'">
             {{ record.name }}
+          </template>
+          <template v-else-if="column.dataIndex === 'category1Id'">
+            {{ record.category1Id }}
+          </template>
+          <template v-else-if="column.dataIndex === 'category2Id'">
+            {{ record.category2Id }}
           </template>
           <template v-else-if="column.dataIndex === 'docCount'">
             {{ record.docCount }}
@@ -82,7 +94,7 @@
                   cancel-text="否"
                   @confirm="handleDelete(record.id)"
               >
-                <a-button type="danger">
+                <a-button type="primary" danger>
                   删除
                 </a-button>
               </a-popconfirm>
@@ -99,22 +111,28 @@
       :confirm-loading="modalLoading"
       @ok="handleModalOk"
   >
-    <a-form :model="ebooks" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+    <a-form :model="ebook" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
       <a-form-item label="封面">
-        <a-input v-model:value="ebooks.cover" />
+        <a-input v-model:value="ebook.cover" />
       </a-form-item>
       <a-form-item label="名称">
-        <a-input v-model:value="ebooks.name" />
+        <a-input v-model:value="ebook.name" />
       </a-form-item>
-      <a-form-item label="分类">
-        <a-cascader
-            v-model:value="categoryIds"
-            :field-names="{ label: 'name', value: 'id', children: 'children' }"
-            :options="level1"
-        />
+<!--      <a-form-item label="分类">-->
+<!--        <a-cascader-->
+<!--            v-model:value="categoryIds"-->
+<!--            :field-names="{ label: 'name', value: 'id', children: 'children' }"-->
+<!--            :options="level1"-->
+<!--        />-->
+<!--      </a-form-item>-->
+      <a-form-item label="分类1">
+        <a-input v-model:value="ebook.category1Id" />
+      </a-form-item>
+      <a-form-item label="分类2">
+        <a-input v-model:value="ebook.category2Id" />
       </a-form-item>
       <a-form-item label="描述">
-        <a-input v-model:value="ebooks.description" type="textarea" />
+        <a-input v-model:value="ebook.description" type="textarea" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -149,8 +167,12 @@ export default defineComponent({
         dataIndex: 'name'
       },
       {
-        title: '分类',
-        dataIndex: 'category'
+        title: '分类1',
+        dataIndex: 'category1Id'
+      },
+      {
+        title: '分类2',
+        dataIndex: 'category2Id'
       },
       {
         title: '文档数',
@@ -203,7 +225,7 @@ export default defineComponent({
      * 表格点击页码时触发
      */
     const handleTableChange = (pagination: any) => {
-      console.log("看看自带的分页参数都有啥：" + pagination);
+      console.log("查看自带的分页参数：" + pagination);
       handleQuery({
         page: pagination.current,
         size: pagination.pageSize
@@ -220,12 +242,12 @@ export default defineComponent({
     const modalLoading = ref(false);
     const handleModalOk = () => {
       modalLoading.value = true;
-      ebook.value.category1Id = categoryIds.value[0];
-      ebook.value.category2Id = categoryIds.value[1];
+      // ebook.value.category1Id = categoryIds.value[0];
+      // ebook.value.category2Id = categoryIds.value[1];
       axios.post("/ebook/save", ebook.value).then((response) => {
-        modalLoading.value = false;
         const data = response.data; // data = commonResp
         if (data.success) {
+          modalLoading.value = false;
           modalVisible.value = false;
 
           // 重新加载列表
@@ -247,6 +269,8 @@ export default defineComponent({
       ebook.value = Tool.copy(record);
       categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
     };
+
+
 
     /**
      * 新增
