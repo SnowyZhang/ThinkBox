@@ -26,7 +26,7 @@ public class EbookController {
     }
 
     @PostMapping("/save")
-    public CommonResp save(@RequestBody EbookSaveReq req){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+    public CommonResp save(@RequestBody @Valid EbookSaveReq req){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
         CommonResp resp = new CommonResp<>();
         ebookService.save(req);
         return resp;
