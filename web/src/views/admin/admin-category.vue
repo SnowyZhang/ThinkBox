@@ -10,7 +10,7 @@
             </a-input>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+            <a-button type="primary" @click="handleQuery({})">
               查询
             </a-button>
           </a-form-item>
@@ -21,13 +21,14 @@
           </a-form-item>
         </a-form>
       </p>
+
       <a-table
           :columns="columns"
           :row-key="(record:any) => record.id"
           :data-source="categorys"
-          :pagination="pagination"
+          :pagination="false"
           :loading="loading"
-          @change="handleTableChange"
+          :defaultExpandAllRows="true"
       >
         <template #headerCell="{ column }">
           <template v-if="column.dataIndex === 'name'">
@@ -116,12 +117,7 @@ export default defineComponent({
   setup() {
     const param = ref();
     param.value = {};
-    const categorys = ref([]);
-    const pagination = ref({
-      current: 1,
-      pageSize: 10,
-      total: 0
-    });
+    const categorys = ref();
     const loading = ref(false);
 
     const columns = [
@@ -129,10 +125,6 @@ export default defineComponent({
         title: '名称',
         dataIndex: 'name'
       },
-      // {
-      //   title: '分类id',
-      //   dataIndex: 'id'
-      // },
       {
         title: '父分类id',
         key: 'parentId',
@@ -140,7 +132,6 @@ export default defineComponent({
       },
       {
         title: '优先级',
-        key: 'priority',
         dataIndex: 'priority'
       },
       {
@@ -149,45 +140,42 @@ export default defineComponent({
         // slots: { customRender: 'action' }
       }
     ];
-
+    /**
+     * 一级分类树，children属性就是二级分类
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const levelTree = ref(); // 一级分类树，children属性就是二级分类
+    levelTree.value = [];
     /**
      * 数据查询
      **/
     const handleQuery = (params: any) => {
       loading.value = true;
-      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      categorys.value = [];
-      axios.get("/category/list", {
+      levelTree.value = [];
+      axios.get("/category/all", {
         params: {
-          page: params.page, //从参数params中取值
-          size: params.size, //从参数params中取值
-          name: param.value.name //从响应式变量param中取值
+          name: param.value.name // 从响应式变量 param 中取值
         }
       }).then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
-          categorys.value = data.content.list;
-          console.log("Categorys data:", categorys.value);
+          categorys.value = data.content;
+          console.log("原始分类数组", categorys.value);
 
-          // 重置分页按钮
-          pagination.value.current = params.page;
-          pagination.value.total = data.content.total;
+          levelTree.value = [];
+          levelTree.value = Tool.array2Tree(categorys.value, 0);
+          console.log("分类树", levelTree);
         } else {
           message.error(data.message);
         }
-      });
-    };
-
-
-    /**
-     * 表格点击页码时触发
-     */
-    const handleTableChange = (pagination: any) => {
-      console.log("查看自带的分页参数：" + pagination);
-      handleQuery({
-        page: pagination.current,
-        size: pagination.pageSize
       });
     };
 
@@ -210,10 +198,7 @@ export default defineComponent({
           modalVisible.value = false;
 
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-          });
+          handleQuery({});
         } else {
           message.error(data.message);
         }
@@ -250,10 +235,7 @@ export default defineComponent({
         const data = response.data; // data = commonResp
         if (data.success) {
           // 重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-          });
+          handleQuery({});
         } else {
           message.error(data.message);
         }
@@ -262,16 +244,15 @@ export default defineComponent({
 
 
     onMounted(() => {
-      handleQuery({ page: pagination.value.current, size: pagination.value.pageSize });
+      handleQuery({});
     });
 
     return {
       param,
       categorys,
-      pagination,
+      levelTree,
       columns,
       loading,
-      handleTableChange,
       handleQuery,
 
       edit,

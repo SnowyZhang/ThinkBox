@@ -33,6 +33,8 @@ export class Tool {
    */
   public static array2Tree (array: any, parentId: number) {
     if (Tool.isEmpty(array)) {
+      //发出警告
+        console.warn('array为空');
       return [];
     }
 

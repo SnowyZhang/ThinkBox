@@ -30,6 +30,7 @@ public class CategoryService {
 
     public PageResp<CategoryQueryResp> list(CategoryQueryReq categoryQueryReq) {
         CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("priority asc");
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
         if (!ObjectUtils.isEmpty(categoryQueryReq.getName())) {
             criteria.andNameLike("%" + categoryQueryReq.getName() + "%");
@@ -40,12 +41,6 @@ public class CategoryService {
         PageInfo<Category> pageInfo = new PageInfo<>(categoryList);
         LOG.info("总行数: {}", pageInfo.getTotal());
         LOG.info("总页数: {}", pageInfo.getPages());
-//        List<CategoryResp> categoryResps = new ArrayList<>();
-//        for(Category category: categoryList) {
-//            CategoryResp categoryResp = new CategoryResp();
-//            BeanUtils.copyProperties(category,categoryResp);
-//            categoryResps.add(categoryResp);
-//        }
         List<CategoryQueryResp> categoryQueryResps = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
         PageResp<CategoryQueryResp> categoryPageResp = new PageResp<>();
         categoryPageResp.setTotal(pageInfo.getTotal());
@@ -67,5 +62,12 @@ public class CategoryService {
 
     public void delete(Long id) {
         categoryMapper.deleteByPrimaryKey(id);
+    }
+
+    public List<CategoryQueryResp> all(CategoryQueryReq categoryQueryReq) {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("priority asc");
+        List<Category> categoryList =  categoryMapper.selectByExample(categoryExample);
+        return CopyUtil.copyList(categoryList, CategoryQueryResp.class);
     }
 }

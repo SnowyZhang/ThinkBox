@@ -10,6 +10,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -21,6 +23,13 @@ public class CategoryController {
     public CommonResp List(@Valid CategoryQueryReq categoryQueryReq){
         CommonResp<PageResp<CategoryQueryResp>> resp = new CommonResp<>();
         PageResp<CategoryQueryResp> list = categoryService.list(categoryQueryReq);
+        resp.setContent(list);
+        return resp;
+    }
+    @GetMapping("/all")
+    public CommonResp all(@Valid CategoryQueryReq categoryQueryReq){
+        CommonResp<List<CategoryQueryResp>> resp = new CommonResp<>();
+        List<CategoryQueryResp> list = categoryService.all(categoryQueryReq);
         resp.setContent(list);
         return resp;
     }
