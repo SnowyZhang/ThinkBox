@@ -48,7 +48,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large"  :grid="{gutter:20,column:3}" :data-source="ebooks">
+      <a-list item-layout="vertical" size="large"  :grid="{gutter:20,column:3}" :pagination="pagination" :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -93,27 +93,33 @@ export default defineComponent({
   setup(){
     // console.log("setup");
     // eslint-disable-next-line
-    const ebooks = ref<any[]>([]);
+    const ebooks = ref([]);
     const ebooksRef = reactive({books:[]});
+    const pagination = ref({
+      current: 1,
+      pageSize: 100,
+      total: 0
+    });
     onMounted(()=>{
       // console.log("onMounted");
-      axios.get("/ebook/list").then((response)=>{
-        const  data = response.data||[];
-        ebooks.value = data.content;
-        ebooksRef.books = data.content;
+      axios.get("/ebook/list",{params: {
+          page: pagination.value.current,
+          size: pagination.value.pageSize
+        }
+      }).then((response)=>{
+        const  data = response.data;
+        ebooks.value = data.content.list;
+        ebooksRef.books = data.content.list;
         // console.log(response);
+        pagination.value.total = data.content.total;
+        pagination.value.current = data.content.page;
       })
     });
     return {
       ebooks,
       books:toRef(ebooksRef,"books"),
       listData,
-      pagination : {
-        onChange: (page: number) => {
-          console.log(page);
-        },
-        pageSize: 3,
-      },
+      pagination,
       actions: [
         { icon: StarOutlined, text: '156' },
         { icon: LikeOutlined, text: '156' },
