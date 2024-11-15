@@ -201,9 +201,9 @@ export default defineComponent({
       ebooks.value = [];
       axios.get("/ebook/list", {
         params: {
-          page: params.page,
-          size: params.size,
-          name: param.value.name
+          page: params.page, //从参数params中取值
+          size: params.size, //从参数params中取值
+          name: param.value.name //从响应式变量param中取值
         }
       }).then((response) => {
         loading.value = false;
@@ -267,6 +267,12 @@ export default defineComponent({
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = Tool.copy(record);
+      /*
+      *如果我不copy，而是直接赋值，那么当我修改表单数据，然后点击取消.
+      * 再点击编辑，查看表单数据时,会发现表单数据已经被修改了.
+      * 这是因为直接赋值，是引用赋值，所以修改表单数据，会直接修改原始数据
+      * 而copy是深拷贝，所以修改表单数据，不会影响原始数据
+      * */
       categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
     };
 
