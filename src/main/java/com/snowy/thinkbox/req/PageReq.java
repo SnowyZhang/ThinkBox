@@ -1,8 +1,14 @@
 package com.snowy.thinkbox.req;
 
-public class PageReq {
-    private int page;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
+public class PageReq {
+    @NotNull(message = "当前页数不可为空")
+    private int page;
+    @NotNull(message = "每页的查询条数不可为空")
+    @Max(value = 100, message = "每页的查询条数不可超过100")
     private int size;
 
     public int getPage() {

@@ -7,6 +7,7 @@ import com.snowy.thinkbox.resp.EbookQueryResp;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.service.EbookService;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,7 @@ public class EbookController {
 
 
     @GetMapping("/list")
-    public CommonResp List(EbookQueryReq ebookQueryReq){
+    public CommonResp List(@Valid EbookQueryReq ebookQueryReq){
         CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp<>();
         PageResp<EbookQueryResp> list = ebookService.list(ebookQueryReq);
         resp.setContent(list);

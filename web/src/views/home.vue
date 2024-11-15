@@ -74,6 +74,7 @@
 import { defineComponent,onMounted,ref} from 'vue';
 import {LaptopOutlined, NotificationOutlined, UserOutlined,StarOutlined, LikeOutlined, MessageOutlined} from "@ant-design/icons-vue"; // @ is an alias to /src
 import axios from 'axios';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
   name: 'Home',
@@ -91,9 +92,13 @@ export default defineComponent({
         }
       }).then((response)=>{
         const  data = response.data;
-        ebooks.value = data.content.list;
-        pagination.value.total = data.content.total;
-        pagination.value.current = data.content.page;
+        if(data.success){
+          ebooks.value = data.content.list;
+          pagination.value.total = data.content.total;
+          pagination.value.current = data.content.page;
+        }else{
+          message.error(data.message);
+        }
       })
     });
     return {
