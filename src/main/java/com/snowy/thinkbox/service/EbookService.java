@@ -10,6 +10,7 @@ import com.snowy.thinkbox.req.EbookSaveReq;
 import com.snowy.thinkbox.resp.EbookQueryResp;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
+import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
 //import org.mybatis.logging.Logger;
 //import org.mybatis.logging.LoggerFactory;
@@ -25,6 +26,9 @@ public class EbookService {
     private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     public PageResp<EbookQueryResp> list(EbookQueryReq ebookQueryReq) {
         EbookExample ebookExample = new EbookExample();
@@ -55,6 +59,7 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
+            ebook.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
             ebookMapper.insert(ebook);
         } else {
             // 更新
