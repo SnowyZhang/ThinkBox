@@ -286,7 +286,7 @@ export default defineComponent({
       ebook.value = {};
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
       axios.post("/ebook/delete/" + id).then((response) => {
         const data = response.data; // data = commonResp
         if (data.success) {

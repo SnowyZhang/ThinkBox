@@ -31,7 +31,7 @@ export class Tool {
    * 使用递归将数组转为树形结构
    * 父ID属性为parent
    */
-  public static array2Tree (array: any, parentId: number) {
+  public static array2Tree (array: any, parentId: string) {
     if (Tool.isEmpty(array)) {
       //发出警告
         console.warn('array为空');
@@ -41,9 +41,8 @@ export class Tool {
     const result = [];
     for (let i = 0; i < array.length; i++) {
       const c = array[i];
-      console.log(c);
-      // console.log(Number(c.parent), Number(parentId));
-      if (Number(c.parentId) === Number(parentId)) {
+      // console.log(c.parentId, parentId);
+      if (c.parentId === parentId) {
         result.push(c);
 
         // 递归查看当前节点对应的子节点

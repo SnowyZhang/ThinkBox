@@ -171,7 +171,7 @@ export default defineComponent({
           console.log("原始分类数组", categorys.value);
 
           levelTree.value = [];
-          levelTree.value = Tool.array2Tree(categorys.value, 0);
+          levelTree.value = Tool.array2Tree(categorys.value, "0");
           console.log("分类树", levelTree);
         } else {
           message.error(data.message);
@@ -230,7 +230,7 @@ export default defineComponent({
       category.value = {};
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = (id: string) => {
       axios.post("/category/delete/" + id).then((response) => {
         const data = response.data; // data = commonResp
         if (data.success) {

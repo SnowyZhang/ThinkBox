@@ -46,10 +46,22 @@ public class CategoryController {
      * 而在Spring的其他地方,比如Spring EL表达式中,占位符是用${}来声明的,用于表示引用变量或表达式
      */
     @PostMapping("/delete/{id}") //Restful风格
-    public CommonResp delete(@PathVariable Long id){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+    public CommonResp delete(@PathVariable String id){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
         CommonResp resp = new CommonResp<>();
-        categoryService.delete(id);
+        try {
+            Long longId = Long.parseLong(id); // 尝试将字符串转为 Long
+            categoryService.delete(longId);
+        } catch (NumberFormatException e) {
+            resp.setSuccess(false);
+            resp.setMessage("Invalid ID format: " + id);
+            return resp;
+        }
+
+        resp.setSuccess(true);
+        resp.setMessage("Delete operation successful for ID: " + id);
         return resp;
     }
+
+
 
 }

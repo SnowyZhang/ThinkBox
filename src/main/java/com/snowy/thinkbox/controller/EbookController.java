@@ -36,11 +36,22 @@ public class EbookController {
      * 在SpringMVC中,@PathVariable可以用来映射URL中的占位符到目标方法的参数中.大括号用于声明占位符,占位符的名称必顫和@RequestMapping中的名称一致.
      * 而在Spring的其他地方,比如Spring EL表达式中,占位符是用${}来声明的,用于表示引用变量或表达式
      */
-    @PostMapping("/delete/{id}") //Restful风格
-    public CommonResp delete(@PathVariable Long id){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+    @PostMapping("/delete/{id}") // 或使用 @DeleteMapping
+    public CommonResp delete(@PathVariable String id) { //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
         CommonResp resp = new CommonResp<>();
-        ebookService.delete(id);
+        try {
+            Long longId = Long.parseLong(id); // 尝试将字符串转为 Long
+            ebookService.delete(longId);
+        } catch (NumberFormatException e) {
+            resp.setSuccess(false);
+            resp.setMessage("Invalid ID format: " + id);
+            return resp;
+        }
+
+        resp.setSuccess(true);
+        resp.setMessage("Delete operation successful for ID: " + id);
         return resp;
     }
+
 
 }
