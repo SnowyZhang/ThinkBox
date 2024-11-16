@@ -36,12 +36,12 @@
           <template v-else-if="column.dataIndex === 'name'">
             名称
           </template>
-          <template v-else-if="column.dataIndex === 'category1Id'">
-            分类1
-          </template>
-          <template v-else-if="column.dataIndex === 'category2Id'">
-            分类2
-          </template>
+<!--          <template v-else-if="column.dataIndex === 'category1Id'">-->
+<!--            分类1-->
+<!--          </template>-->
+<!--          <template v-else-if="column.dataIndex === 'category2Id'">-->
+<!--            分类2-->
+<!--          </template>-->
           <template v-else-if="column.dataIndex === 'docCount'">
             文档数
           </template>
@@ -63,12 +63,12 @@
           <template v-else-if="column.dataIndex === 'name'">
             {{ record.name }}
           </template>
-          <template v-else-if="column.dataIndex === 'category1Id'">
-            {{ record.category1Id }}
-          </template>
-          <template v-else-if="column.dataIndex === 'category2Id'">
-            {{ record.category2Id }}
-          </template>
+<!--          <template v-else-if="column.dataIndex === 'category1Id'">-->
+<!--            {{ record.category1Id }}-->
+<!--          </template>-->
+<!--          <template v-else-if="column.dataIndex === 'category2Id'">-->
+<!--            {{ record.category2Id }}-->
+<!--          </template>-->
           <template v-else-if="column.dataIndex === 'docCount'">
             {{ record.docCount }}
           </template>
@@ -118,19 +118,19 @@
       <a-form-item label="名称">
         <a-input v-model:value="ebook.name" />
       </a-form-item>
-<!--      <a-form-item label="分类">-->
-<!--        <a-cascader-->
-<!--            v-model:value="categoryIds"-->
-<!--            :field-names="{ label: 'name', value: 'id', children: 'children' }"-->
-<!--            :options="level1"-->
-<!--        />-->
+      <a-form-item label="分类">
+        <a-cascader
+            v-model:value="categoryIds"
+            :field-names="{ label: 'name', value: 'id', children: 'children' }"
+            :options="levelTree"
+        />
+      </a-form-item>
+<!--      <a-form-item label="分类1">-->
+<!--        <a-input v-model:value="ebook.category1Id" />-->
 <!--      </a-form-item>-->
-      <a-form-item label="分类1">
-        <a-input v-model:value="ebook.category1Id" />
-      </a-form-item>
-      <a-form-item label="分类2">
-        <a-input v-model:value="ebook.category2Id" />
-      </a-form-item>
+<!--      <a-form-item label="分类2">-->
+<!--        <a-input v-model:value="ebook.category2Id" />-->
+<!--      </a-form-item>-->
       <a-form-item label="描述">
         <a-input v-model:value="ebook.description" type="textarea" />
       </a-form-item>
@@ -167,12 +167,8 @@ export default defineComponent({
         dataIndex: 'name'
       },
       {
-        title: '分类1',
-        dataIndex: 'category1Id'
-      },
-      {
-        title: '分类2',
-        dataIndex: 'category2Id'
+        title: '分类',
+        slots: { customRender: 'category' }
       },
       {
         title: '文档数',
@@ -242,8 +238,8 @@ export default defineComponent({
     const modalLoading = ref(false);
     const handleModalOk = () => {
       modalLoading.value = true;
-      // ebook.value.category1Id = categoryIds.value[0];
-      // ebook.value.category2Id = categoryIds.value[1];
+      ebook.value.category1Id = categoryIds.value[0];
+      ebook.value.category2Id = categoryIds.value[1];
       axios.post("/ebook/save", ebook.value).then((response) => {
         modalLoading.value = false;
         const data = response.data; // data = commonResp
@@ -301,52 +297,54 @@ export default defineComponent({
       });
     };
 
-    // const level1 =  ref();
-    // let categorys: any;
-    // /**
-    //  * 查询所有分类
-    //  **/
-    // const handleQueryCategory = () => {
-    //   loading.value = true;
-    //   axios.get("/category/all").then((response) => {
-    //     loading.value = false;
-    //     const data = response.data;
-    //     if (data.success) {
-    //       categorys = data.content;
-    //       console.log("原始数组：", categorys);
-    //
-    //       level1.value = [];
-    //       level1.value = Tool.array2Tree(categorys, 0);
-    //       console.log("树形结构：", level1.value);
-    //
-    //       // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
-    //       handleQuery({
-    //         page: 1,
-    //         size: pagination.value.pageSize,
-    //       });
-    //     } else {
-    //       message.error(data.message);
-    //     }
-    //   });
-    // };
+    const levelTree =  ref();
+    let categorys: any;
+    /**
+     * 查询所有分类
+     **/
+    const handleQueryCategory = () => {
+      loading.value = true;
+      axios.get("/category/all").then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          categorys = data.content;
+          console.log("原始数组：", categorys);
 
-    // const getCategoryName = (cid: number) => {
-    //   // console.log(cid)
-    //   let result = "";
-    //   categorys.forEach((item: any) => {
-    //     if (item.id === cid) {
-    //       // return item.name; // 注意，这里直接return不起作用
-    //       result = item.name;
-    //     }
-    //   });
-    //   return result;
-    // };
+          levelTree.value = [];
+          levelTree.value = Tool.array2Tree(categorys, "0");
+          console.log("树形结构：", levelTree.value);
+
+          // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+          handleQuery({
+            page: 1,
+            size: pagination.value.pageSize,
+          });
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    const getCategoryName = (cid: string) => {
+      // console.log(cid)
+      let result = "";
+      categorys.forEach((item: any) => {
+        if (item.id === cid) {
+          // return item.name; // 注意，这里直接return不起作用
+          result = item.name;
+        }
+      });
+      return result;
+    };
 
     onMounted(() => {
-      handleQuery({ page: pagination.value.current, size: pagination.value.pageSize });
+      // handleQuery({ page: pagination.value.current, size: pagination.value.pageSize });
+      handleQueryCategory();
     });
 
     return {
+      handleQueryCategory,
       param,
       ebooks,
       pagination,
