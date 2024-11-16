@@ -36,6 +36,9 @@
           <template v-else-if="column.dataIndex === 'name'">
             名称
           </template>
+          <template v-else-if="column.key === 'category'">
+            分类
+          </template>
 <!--          <template v-else-if="column.dataIndex === 'category1Id'">-->
 <!--            分类1-->
 <!--          </template>-->
@@ -62,6 +65,9 @@
           </template>
           <template v-else-if="column.dataIndex === 'name'">
             {{ record.name }}
+          </template>
+          <template v-else-if="column.key === 'category'">
+            <span> {{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }} </span>
           </template>
 <!--          <template v-else-if="column.dataIndex === 'category1Id'">-->
 <!--            {{ record.category1Id }}-->
@@ -168,7 +174,7 @@ export default defineComponent({
       },
       {
         title: '分类',
-        slots: { customRender: 'category' }
+        key: 'category'
       },
       {
         title: '文档数',
@@ -327,12 +333,15 @@ export default defineComponent({
     };
 
     const getCategoryName = (cid: string) => {
-      // console.log(cid)
+      console.log("cid",cid)
       let result = "";
       categorys.forEach((item: any) => {
+        //查看item.if类型
+        console.log("item.id",item.id)
         if (item.id === cid) {
           // return item.name; // 注意，这里直接return不起作用
           result = item.name;
+          console.log("result",result)
         }
       });
       return result;
@@ -352,7 +361,7 @@ export default defineComponent({
       loading,
       handleTableChange,
       handleQuery,
-      // getCategoryName,
+      getCategoryName,
 
       edit,
       add,
@@ -362,7 +371,7 @@ export default defineComponent({
       modalLoading,
       handleModalOk,
       categoryIds,
-      // level1,
+      levelTree,
 
       handleDelete
     }
