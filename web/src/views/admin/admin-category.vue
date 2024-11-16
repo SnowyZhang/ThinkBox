@@ -97,7 +97,15 @@
 <!--        <a-input v-model:value="category.id" />-->
 <!--      </a-form-item>-->
       <a-form-item label="父分类">
-        <a-input v-model:value="category.parentId" />
+        <a-select
+            ref="select"
+            v-model:value="category.parentId"
+        >
+          <a-select-option value="0">无</a-select-option>
+          <a-select-option v-for = "c in levelTree" :key="c.id" :value="c.id" :disabled="category.id===c.id">
+            {{c.name}}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label="优先级">
         <a-input v-model:value="category.priority" />
