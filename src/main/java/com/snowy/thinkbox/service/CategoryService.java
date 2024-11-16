@@ -67,6 +67,10 @@ public class CategoryService {
     public List<CategoryQueryResp> all(CategoryQueryReq categoryQueryReq) {
         CategoryExample categoryExample = new CategoryExample();
         categoryExample.setOrderByClause("priority asc");
+        CategoryExample.Criteria criteria = categoryExample.createCriteria();
+        if (!ObjectUtils.isEmpty(categoryQueryReq.getName())) {
+            criteria.andNameLike("%" + categoryQueryReq.getName() + "%");
+        }
         List<Category> categoryList =  categoryMapper.selectByExample(categoryExample);
         return CopyUtil.copyList(categoryList, CategoryQueryResp.class);
     }

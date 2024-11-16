@@ -25,7 +25,7 @@
       <a-table
           :columns="columns"
           :row-key="(record:any) => record.id"
-          :data-source="categorys"
+          :data-source="levelTree"
           :pagination="false"
           :loading="loading"
           :defaultExpandAllRows="true"
