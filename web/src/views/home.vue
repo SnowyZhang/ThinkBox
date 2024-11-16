@@ -2,55 +2,34 @@
   <a-layout>
     <a-layout-sider width="200" style="background: #fff">
       <a-menu
-          v-model:selectedKeys="selectedKeys2"
-          v-model:openKeys="openKeys"
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
+          :openKeys="openKeys"
       >
-        <a-sub-menu key="sub1">
-          <template #title>
-              <span>
-                <user-outlined />
-                subnav 1
-              </span>
+        <a-menu-item key="welcome">
+          <router-link to="/"></router-link>
+          <MailOutlined />
+          <span>欢迎</span>
+        </a-menu-item>
+        <a-sub-menu v-for="item in levelTree" :key="item.id" :disabled="false">
+          <template v-slot:title>
+            <span><user-outlined />{{item.name}}</span>
           </template>
-          <a-menu-item key="1">option1</a-menu-item>
-          <a-menu-item key="2">option2</a-menu-item>
-          <a-menu-item key="3">option3</a-menu-item>
-          <a-menu-item key="4">option4</a-menu-item>
+          <a-menu-item v-for="child in item.children" :key="child.id">
+            <MailOutlined /><span>{{child.name}}</span>
+          </a-menu-item>
         </a-sub-menu>
-        <a-sub-menu key="sub2">
-          <template #title>
-              <span>
-                <laptop-outlined />
-                subnav 2
-              </span>
-          </template>
-          <a-menu-item key="5">option5</a-menu-item>
-          <a-menu-item key="6">option6</a-menu-item>
-          <a-menu-item key="7">option7</a-menu-item>
-          <a-menu-item key="8">option8</a-menu-item>
-        </a-sub-menu>
-        <a-sub-menu key="sub3">
-          <template #title>
-              <span>
-                <notification-outlined />
-                subnav 3
-              </span>
-          </template>
-          <a-menu-item key="9">option9</a-menu-item>
-          <a-menu-item key="10">option10</a-menu-item>
-          <a-menu-item key="11">option11</a-menu-item>
-          <a-menu-item key="12">option12</a-menu-item>
-        </a-sub-menu>
+        <a-menu-item key="tip" :disabled="true">
+          <span>以上菜单在分类管理配置</span>
+        </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large"  :grid="{gutter:20,column:3}" :pagination="pagination" :data-source="ebooks">
+      <a-list item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }" :pagination="pagination" :data-source="ebooks">
         <template #renderItem="{ item }">
-          <a-list-item key="item.name">
+          <a-list-item :key="item.name">
             <template #actions>
               <span v-for="{ icon, text } in actions" :key="icon">
                 <component :is="icon" style="margin-right: 8px" />
@@ -71,58 +50,70 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,onMounted,ref} from 'vue';
-import {LaptopOutlined, NotificationOutlined, UserOutlined,StarOutlined, LikeOutlined, MessageOutlined} from "@ant-design/icons-vue"; // @ is an alias to /src
+import { defineComponent, onMounted, ref } from 'vue';
+import { UserOutlined, MailOutlined } from "@ant-design/icons-vue";
 import axios from 'axios';
-import {message} from "ant-design-vue";
+import { message } from "ant-design-vue";
+import { Tool } from "@/util/tool";
 
 export default defineComponent({
   name: 'Home',
-  setup(){
+  setup() {
+    const openKeys = ref([]);
+    const levelTree = ref();
+    let categorys: any;
     const ebooks = ref([]);
     const pagination = ref({
       current: 1,
       pageSize: 100,
       total: 0
     });
-    onMounted(()=>{
-      axios.get("/ebook/list",{params: {
+
+    const handleQueryCategory = () => {
+      axios.get("/category/all").then((response) => {
+        const data = response.data;
+        if (data.success) {
+          categorys = data.content;
+          openKeys.value = categorys.map((category: any) => category.id);
+          console.log('openkeys:', openKeys)
+          levelTree.value = Tool.array2Tree(categorys, "0");
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    onMounted(() => {
+      handleQueryCategory();
+      axios.get("/ebook/list", {
+        params: {
           page: pagination.value.current,
           size: pagination.value.pageSize
         }
-      }).then((response)=>{
-        const  data = response.data;
-        if(data.success){
-          ebooks.value = data.content.list;
-          pagination.value.total = data.content.total;
-          pagination.value.current = data.content.page;
-        }else{
-          message.error(data.message);
-        }
-      })
+      }).then((response) => {
+        const data = response.data;
+        ebooks.value = data.content.list;
+        pagination.value.total = data.content.total;
+        pagination.value.current = data.content.page;
+      });
     });
+
     return {
       ebooks,
       pagination,
-      actions: [
-        { icon: StarOutlined, text: '156' },
-        { icon: LikeOutlined, text: '156' },
-        { icon: MessageOutlined, text: '2' },
-      ],
+      openKeys,
+      levelTree
     }
-  },
-  components: {
-    NotificationOutlined, UserOutlined, LaptopOutlined,
-  },
+  }
 });
 </script>
 
 <style scoped>
-  .ant-avatar {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    border-radius: 8%;
-    margin: 5px 0;
-  }
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}
 </style>
