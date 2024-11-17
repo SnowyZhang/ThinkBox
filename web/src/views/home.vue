@@ -73,6 +73,8 @@ export default defineComponent({
       pageSize: 100,
       total: 0
     });
+    let category2Id = "0";
+    const showWelcome = ref(true);
 
     const handleQueryCategory = () => {
       axios.get("/category/all").then((response) => {
@@ -88,31 +90,38 @@ export default defineComponent({
       });
     };
 
+    const handleQueryEbooks =()=>{
+      axios.get("/ebook/list", {
+        params: {
+          page: pagination.value.current,
+          size: pagination.value.pageSize,
+          category2Id: category2Id
+        }
+      }).then((response) => {
+        const data = response.data;
+        ebooks.value = data.content.list;
+        pagination.value.total = data.content.total;
+        // pagination.value.current = data.content.page;
+      });
+    }
+
     const handleClick = (e: any) => {
       console.log('click ', e);
       if (e.key === 'welcome') {
         showWelcome.value = true;
       } else {
         showWelcome.value = false;
+        category2Id = e.key;
+        handleQueryEbooks();
       }
     };
 
-    const showWelcome = ref(true);
     onMounted(() => {
       // showWelcome.value = true;
       handleQueryCategory();
-      axios.get("/ebook/list", {
-        params: {
-          page: pagination.value.current,
-          size: pagination.value.pageSize
-        }
-      }).then((response) => {
-        const data = response.data;
-        ebooks.value = data.content.list;
-        pagination.value.total = data.content.total;
-        pagination.value.current = data.content.page;
-      });
+
     });
+
 
     return {
       ebooks,
