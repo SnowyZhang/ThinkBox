@@ -75,4 +75,7 @@ CREATE TABLE `doc` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档';
 
 -- 新增技术相关文档
-INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (1, 'Java8新特性', 1, 0, 1,0,0);
+# INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (1, 'Java8新特性', 1, 0, 1,0,0);
+INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (1, '文档1', 1, 0, 1,0,0);
+INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (2, '文档2', 2, 0, 2,0,0);
+INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (3, '文档1.1', 1, 1, 3,0,0);

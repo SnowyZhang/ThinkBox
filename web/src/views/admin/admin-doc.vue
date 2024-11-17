@@ -92,21 +92,33 @@
     <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
       <a-form-item label="名称">
         <a-input v-model:value="doc.name" />
+      </a-form-item><a-form-item label="父文档">
+      <a-tree-select
+          v-model:value="doc.parentId"
+          show-search
+          style="width: 100%"
+          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+          placeholder="请选择父文档"
+          allow-clear
+          tree-default-expand-all
+          :tree-data="leveltreeSelect"
+          tree-node-filter-prop="label"
+          :fieldNames="{ label: 'name', key: 'id', value:'id',children: 'children' }"
+      >
+      </a-tree-select>
       </a-form-item>
-<!--      <a-form-item label="id">-->
-<!--        <a-input v-model:value="doc.id" />-->
+
+<!--      <a-form-item label="父文档">-->
+<!--        <a-select-->
+<!--            ref="select"-->
+<!--            v-model:value="doc.parentId"-->
+<!--        >-->
+<!--          <a-select-option value="0">无</a-select-option>-->
+<!--          <a-select-option v-for = "c in levelTree" :key="c.id" :value="c.id" :disabled="doc.id===c.id">-->
+<!--            {{c.name}}-->
+<!--          </a-select-option>-->
+<!--        </a-select>-->
 <!--      </a-form-item>-->
-      <a-form-item label="父文档">
-        <a-select
-            ref="select"
-            v-model:value="doc.parentId"
-        >
-          <a-select-option value="0">无</a-select-option>
-          <a-select-option v-for = "c in levelTree" :key="c.id" :value="c.id" :disabled="doc.id===c.id">
-            {{c.name}}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
       <a-form-item label="优先级">
         <a-input v-model:value="doc.priority" />
       </a-form-item>
@@ -196,6 +208,8 @@ export default defineComponent({
     /**
      * 数组，[100, 101]对应：前端开发 / Vue
      */
+    const leveltreeSelect = ref();
+    leveltreeSelect.value = [];
     const docIds = ref();
     const doc = ref();
     const modalVisible = ref(false);
@@ -218,6 +232,26 @@ export default defineComponent({
       });
     };
 
+    const setDisabled = (data: any, id: string) => {
+      data.forEach((item: any) => {
+        if(item.id === id){
+          item.disabled = true;
+          const children = item.children;
+          if(Tool.isNotEmpty(children)){
+            children.forEach((citem: any) => {
+              setDisabled(children,citem.id);
+            });
+          }
+        }else{
+          const children = item.children;
+          if(Tool.isNotEmpty(children)){
+            setDisabled(children,id);
+          }
+        }
+
+      });
+    };
+
     /**
      * 编辑
      */
@@ -230,7 +264,9 @@ export default defineComponent({
       * 这是因为直接赋值，是引用赋值，所以修改表单数据，会直接修改原始数据
       * 而copy是深拷贝，所以修改表单数据，不会影响原始数据
       * */
-      docIds.value = [doc.value.doc1Id, doc.value.doc2Id]
+      leveltreeSelect.value = Tool.copy(levelTree.value);
+      setDisabled(leveltreeSelect.value,record.id);
+      leveltreeSelect.value.unshift({id: "0", name: "无"});
     };
 
 
@@ -241,6 +277,8 @@ export default defineComponent({
     const add = () => {
       modalVisible.value = true;
       doc.value = {};
+      leveltreeSelect.value = Tool.copy(levelTree.value);
+      leveltreeSelect.value.unshift({id: "0", name: "无"});
     };
 
     const handleDelete = (id: string) => {
@@ -295,6 +333,7 @@ export default defineComponent({
       modalLoading,
       handleModalOk,
       docIds,
+      leveltreeSelect,
 
       handleDelete,
       getDocName
