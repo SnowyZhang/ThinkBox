@@ -5,9 +5,10 @@
           mode="inline"
           :style="{ height: '100%', borderRight: 0 }"
           :openKeys="openKeys"
+          @click="handleClick"
       >
         <a-menu-item key="welcome">
-          <router-link to="/"></router-link>
+<!--          <router-link to="/"></router-link>-->
           <MailOutlined />
           <span>欢迎</span>
         </a-menu-item>
@@ -27,7 +28,11 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }" :pagination="pagination" :data-source="ebooks">
+      <div class="welcome" v-show="showWelcome">
+        <h1>欢迎</h1>
+        <p>欢迎使用本系统</p>
+      </div>
+      <a-list v-show="!showWelcome" item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }" :pagination="pagination" :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item :key="item.name">
             <template #actions>
@@ -83,7 +88,18 @@ export default defineComponent({
       });
     };
 
+    const handleClick = (e: any) => {
+      console.log('click ', e);
+      if (e.key === 'welcome') {
+        showWelcome.value = true;
+      } else {
+        showWelcome.value = false;
+      }
+    };
+
+    const showWelcome = ref(true);
     onMounted(() => {
+      // showWelcome.value = true;
       handleQueryCategory();
       axios.get("/ebook/list", {
         params: {
@@ -102,7 +118,9 @@ export default defineComponent({
       ebooks,
       pagination,
       openKeys,
-      levelTree
+      levelTree,
+      showWelcome,
+      handleClick
     }
   }
 });
