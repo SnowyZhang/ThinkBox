@@ -9,6 +9,7 @@ public class Category {
 
     private String name;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long parentId;
 
     private Integer priority;

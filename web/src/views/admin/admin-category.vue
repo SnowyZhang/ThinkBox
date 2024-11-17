@@ -37,7 +37,7 @@
 <!--          <template v-else-if="column.dataIndex === 'id'">-->
 <!--            分类id-->
 <!--          </template>-->
-          <template v-else-if="column.dataIndex === 'parentId'">
+          <template v-else-if="column.key === 'parentCategory'">
             父分类
           </template>
           <template v-else-if="column.dataIndex === 'priority'">
@@ -55,8 +55,8 @@
 <!--          <template v-else-if="column.dataIndex === 'id'">-->
 <!--            {{ record.id }}-->
 <!--          </template>-->
-          <template v-else-if="column.dataIndex === 'parentId'">
-            {{ record.parentId }}
+          <template v-else-if="column.key === 'parentCategory'">
+            <span> {{ getCategoryName(record.parentId) }} </span>
           </template>
           <template v-else-if="column.dataIndex === 'priority'">
             {{ record.priority }}
@@ -133,10 +133,15 @@ export default defineComponent({
         title: '名称',
         dataIndex: 'name'
       },
+      // {
+      //   title: '父分类id',
+      //   key: 'parentId',
+      //   dataIndex: 'parentId'
+      // },
       {
-        title: '父分类id',
-        key: 'parentId',
-        dataIndex: 'parentId'
+        title: '父分类',
+        key: 'parentCategory',
+        // dataIndex: 'parentId'
       },
       {
         title: '优先级',
@@ -250,6 +255,25 @@ export default defineComponent({
       });
     };
 
+    const getCategoryName = (cid: string) => {
+      console.log("cid",cid)
+      let result = "";
+      if(cid==="0"){
+        result = "无";
+        return result;
+      }
+      categorys.value.forEach((item: any) => {
+        //查看item.if类型
+        console.log("item.id",item.id)
+        if (item.id === cid) {
+          // return item.name; // 注意，这里直接return不起作用
+          result = item.name;
+          console.log("result",result)
+        }
+      });
+      return result;
+    };
+
 
     onMounted(() => {
       handleQuery({});
@@ -272,7 +296,8 @@ export default defineComponent({
       handleModalOk,
       categoryIds,
 
-      handleDelete
+      handleDelete,
+      getCategoryName
     }
   }
 });
