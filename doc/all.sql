@@ -61,3 +61,18 @@ INSERT INTO `category`(id, name, parent_id, priority) VALUES (900, '人工智能
 INSERT INTO `category`(id, name, parent_id, priority) VALUES (901, '机器学习', 900, 902);
 INSERT INTO `category`(id, name, parent_id, priority) VALUES (902, '深度学习', 900, 903);
 INSERT INTO `category`(id, name, parent_id, priority) VALUES (903, '自然语言处理', 900, 904);
+
+drop table if exists `doc`;
+CREATE TABLE `doc` (
+  `id` BIGINT NOT NULL COMMENT 'id',
+  `name` VARCHAR(50) COMMENT '名称',
+  `ebook_id` BIGINT COMMENT '电子书id',
+    `parent_id` BIGINT COMMENT '父分类id',
+    `priority` int COMMENT '优先级',
+  `view_count` int COMMENT '阅读数',
+  `vote_count` int COMMENT '点赞数',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档';
+
+-- 新增技术相关文档
+INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (1, 'Java8新特性', 1, 0, 1,0,0);
