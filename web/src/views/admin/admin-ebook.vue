@@ -86,7 +86,7 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space size="small">
-              <router-link :to="'/admin/doc?ebookId=' + record.id">
+              <router-link :to="'/admin/doc' ">
                 <a-button type="primary">
                   文档管理
                 </a-button>

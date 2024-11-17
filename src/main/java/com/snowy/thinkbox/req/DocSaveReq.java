@@ -1,21 +1,25 @@
-package com.snowy.thinkbox.domain;
-
+package com.snowy.thinkbox.req;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.constraints.NotNull;
 
-public class Doc {
+public class DocSaveReq {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    @NotNull(message = "【名称】不能为空")
     private String name;
 
     @JsonSerialize(using = ToStringSerializer.class)
+    @NotNull(message = "【电子书】不能为空")
     private Long ebookId;
 
     @JsonSerialize(using = ToStringSerializer.class)
+    @NotNull(message = "【父级目录】不能为空")
     private Long parentId;
 
+    @NotNull(message = "【优先级】不能为空")
     private Integer priority;
 
     private Integer viewCount;
