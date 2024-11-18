@@ -1,388 +1,460 @@
 <template>
   <a-layout>
     <a-layout-content
-        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
+      :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <p>
-        <a-form layout="inline" :model="param">
-          <a-form-item>
-            <a-input v-model:value="param.name" placeholder="名称">
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="handleQuery({})">
-              查询
-            </a-button>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="add()">
-              新增
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </p>
-      <a-table
-          :columns="columns"
-          :row-key="(record:any) => record.id"
-          :data-source="levelTree"
-          :pagination="false"
-          :loading="loading"
-          :defaultExpandAllRows="true"
-      >
-        <template #headerCell="{ column }">
-          <template v-if="column.dataIndex === 'name'">
-            名称
-          </template>
-<!--          <template v-else-if="column.dataIndex === 'id'">-->
-<!--            文档id-->
-<!--          </template>-->
-          <template v-else-if="column.key === 'parentDoc'">
-            父文档
-          </template>
-          <template v-else-if="column.dataIndex === 'priority'">
-            优先级
-          </template>
-          <template v-else-if="column.key === 'action'">
-            Action
-          </template>
-        </template>
-
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'name'">
-            {{ record.name }}
-          </template>
-<!--          <template v-else-if="column.dataIndex === 'id'">-->
-<!--            {{ record.id }}-->
-<!--          </template>-->
-          <template v-else-if="column.key === 'parentDoc'">
-            <span> {{ getDocName(record.parentId) }} </span>
-          </template>
-          <template v-else-if="column.dataIndex === 'priority'">
-            {{ record.priority }}
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-space size="small">
-              <a-button type="primary" @click="edit(record)">
-                编辑
-              </a-button>
-              <a-popconfirm
-                  title="删除后不可恢复，确认删除?"
-                  ok-text="是"
-                  cancel-text="否"
-                  @confirm="handleDelete(record.id)"
-              >
-                <a-button type="primary" danger>
-                  删除
+      <a-row :gutter="24">
+        <a-col :span="8">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleQuery()">
+                  查询
                 </a-button>
-              </a-popconfirm>
-            </a-space>
-          </template>
-        </template>
-      </a-table>
+              </a-form-item>
+              <a-form-item>
+                <a-button type="primary" @click="add()">
+                  新增
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+<!--          <a-table-->
+<!--            v-if="levelTree.length > 0"-->
+<!--            :columns="columns"-->
+<!--            :row-key="(record:any) => record.id"-->
+<!--            :data-source="levelTree"-->
+<!--            :loading="loading"-->
+<!--            :pagination="false"-->
+<!--            size="small"-->
+<!--            :defaultExpandAllRows="true"-->
+<!--          >-->
+<!--            <template #name="{ text, record }">-->
+<!--              {{record.sort}} {{text}}-->
+<!--            </template>-->
+<!--            <template v-slot:action="{ text, record }">-->
+<!--              <a-space size="small">-->
+<!--                <a-button type="primary" @click="edit(record)" size="small">-->
+<!--                  编辑-->
+<!--                </a-button>-->
+<!--                <a-popconfirm-->
+<!--                  title="删除后不可恢复，确认删除?"-->
+<!--                  ok-text="是"-->
+<!--                  cancel-text="否"-->
+<!--                  @confirm="handleDelete(record.id)"-->
+<!--                >-->
+<!--                  <a-button type="primary" danger  size="small">-->
+<!--                    删除-->
+<!--                  </a-button>-->
+<!--                </a-popconfirm>-->
+<!--              </a-space>-->
+<!--            </template>-->
+<!--          </a-table>-->
+          <a-table
+              v-if="levelTree.length > 0"
+              :columns="columns"
+              :row-key="(record:any) => record.id"
+              :data-source="levelTree"
+              :loading="loading"
+              :pagination="false"
+              size="small"
+              :defaultExpandAllRows="true"
+          >
+            <template v-slot:headerCell="{ column }">
+              <template v-if="column.dataIndex === 'name'">
+                名称
+              </template>
+              <template v-else-if="column.key === 'action'">
+                Action
+              </template>
+            </template>
+
+            <template v-slot:bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'name'">
+                {{ record.sort }} {{ record.name }}
+              </template>
+              <template v-else-if="column.key === 'action'">
+                <a-space size="small">
+                  <a-button type="primary" @click="edit(record)" size="small">
+                    编辑
+                  </a-button>
+                  <a-popconfirm
+                      title="删除后不可恢复，确认删除?"
+                      ok-text="是"
+                      cancel-text="否"
+                      @confirm="handleDelete(record.id)"
+                  >
+                    <a-button type="primary" danger size="small">
+                      删除
+                    </a-button>
+                  </a-popconfirm>
+                </a-space>
+              </template>
+            </template>
+          </a-table>
+        </a-col>
+        <a-col :span="16">
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave()">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <a-form :model="doc" layout="vertical">
+            <a-form-item>
+              <a-input v-model:value="doc.name" placeholder="名称"/>
+            </a-form-item>
+            <a-form-item>
+              <a-tree-select
+                v-model:value="doc.parentId"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="treeSelectData"
+                placeholder="请选择父文档"
+                tree-default-expand-all
+                :fieldNames="{label: 'name', key: 'id', value: 'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+            <a-form-item>
+              <a-input v-model:value="doc.priority" placeholder="优先级"/>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="handlePreviewContent()">
+                <EyeOutlined /> 内容预览
+              </a-button>
+            </a-form-item>
+            <a-form-item>
+              <div id="content"></div>
+            </a-form-item>
+          </a-form>
+        </a-col>
+      </a-row>
+
+      <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
+        <div class="wangeditor" :innerHTML="previewHtml"></div>
+      </a-drawer>
+
     </a-layout-content>
   </a-layout>
 
-  <a-modal
-      title="文档表单"
-      v-model:open="modalVisible"
-      :confirm-loading="modalLoading"
-      @ok="handleModalOk"
-  >
-    <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-      <a-form-item label="名称">
-        <a-input v-model:value="doc.name" />
-      </a-form-item><a-form-item label="父文档">
-      <a-tree-select
-          v-model:value="doc.parentId"
-          show-search
-          style="width: 100%"
-          :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-          placeholder="请选择父文档"
-          allow-clear
-          tree-default-expand-all
-          :tree-data="leveltreeSelect"
-          tree-node-filter-prop="label"
-          :fieldNames="{ label: 'name', key: 'id', value:'id',children: 'children' }"
-      >
-      </a-tree-select>
-      </a-form-item>
-
-<!--      <a-form-item label="父文档">-->
-<!--        <a-select-->
-<!--            ref="select"-->
-<!--            v-model:value="doc.parentId"-->
-<!--        >-->
-<!--          <a-select-option value="0">无</a-select-option>-->
-<!--          <a-select-option v-for = "c in levelTree" :key="c.id" :value="c.id" :disabled="doc.id===c.id">-->
-<!--            {{c.name}}-->
-<!--          </a-select-option>-->
-<!--        </a-select>-->
-<!--      </a-form-item>-->
-      <a-form-item label="优先级">
-        <a-input v-model:value="doc.priority" />
-      </a-form-item>
-      <a-form-item label="内容">
-        <div id="content"></div>
-      </a-form-item>
-    </a-form>
-  </a-modal>
+  <!--<a-modal-->
+  <!--  title="文档表单"-->
+  <!--  v-model:visible="modalVisible"-->
+  <!--  :confirm-loading="modalLoading"-->
+  <!--  @ok="handleModalOk"-->
+  <!--&gt;-->
+  <!--  -->
+  <!--</a-modal>-->
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import axios from 'axios';
-import { message } from 'ant-design-vue';
-import {Tool} from "@/util/tool";
-import {useRoute} from "vue-router";
-import E from 'wangeditor';
+  import { defineComponent, onMounted, ref, createVNode } from 'vue';
+  import axios from 'axios';
+  import {message, Modal} from 'ant-design-vue';
+  import {Tool} from "@/util/tool";
+  import {useRoute} from "vue-router";
+  import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
+  import E from 'wangeditor'
 
-export default defineComponent({
-  name: 'AdminDoc',
-  setup() {
-    const param = ref();
-    param.value = {};
-    const docs = ref();
-    const loading = ref(false);
-    const route = useRoute();
+  export default defineComponent({
+    name: 'AdminDoc',
+    setup() {
+      const route = useRoute();
+      const param = ref();
+      param.value = {};
+      const docs = ref();
+      const loading = ref(false);
+      // 因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
+      const treeSelectData = ref();
+      treeSelectData.value = [];
 
-    const columns = [
-      {
-        title: '名称',
-        dataIndex: 'name'
-      },
-      // {
-      //   title: '父文档id',
-      //   key: 'parentId',
-      //   dataIndex: 'parentId'
-      // },
-      {
-        title: '父文档',
-        key: 'parentDoc',
-        // dataIndex: 'parentId'
-      },
-      {
-        title: '优先级',
-        dataIndex: 'priority'
-      },
-      {
-        title: 'Action',
-        key: 'action',
-        // slots: { customRender: 'action' }
-      }
-    ];
-    /**
-     * 一级文档树，children属性就是二级文档
-     * [{
-     *   id: "",
-     *   name: "",
-     *   children: [{
-     *     id: "",
-     *     name: "",
-     *   }]
-     * }]
-     */
-    const levelTree = ref(); // 一级文档树，children属性就是二级文档
-    levelTree.value = [];
-    /**
-     * 数据查询
-     **/
-    const handleQuery = (params: any) => {
-      loading.value = true;
+      const columns = [
+        {
+          title: '名称',
+          dataIndex: 'name'
+        },
+        {
+          title: 'Action',
+          key: 'action',
+          // slots: { customRender: 'action' }
+        }
+      ];
+
+      /**
+       * 一级文档树，children属性就是二级文档
+       * [{
+       *   id: "",
+       *   name: "",
+       *   children: [{
+       *     id: "",
+       *     name: "",
+       *   }]
+       * }]
+       */
+      const levelTree = ref(); // 一级文档树，children属性就是二级文档
       levelTree.value = [];
-      axios.get("/doc/all", {
-        params: {
-          name: param.value.name // 从响应式变量 param 中取值
-        }
-      }).then((response) => {
-        loading.value = false;
-        const data = response.data;
-        if (data.success) {
-          docs.value = data.content;
-          console.log("原始文档数组", docs.value);
 
-          levelTree.value = [];
-          levelTree.value = Tool.array2Tree(docs.value, "0");
-          console.log("文档树", levelTree);
-        } else {
-          message.error(data.message);
-        }
-      });
-    };
+      /**
+       * 数据查询
+       **/
+      const handleQuery = () => {
+        loading.value = true;
+        // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+        levelTree.value = [];
+        axios.get("/doc/all/" + route.query.ebookId).then((response) => {
+          loading.value = false;
+          const data = response.data;
+          if (data.success) {
+            docs.value = data.content;
+            console.log("原始数组：", docs.value);
 
-    // -------- 表单 ---------
-    /**
-     * 数组，[100, 101]对应：前端开发 / Vue
-     */
-    const leveltreeSelect = ref();
-    leveltreeSelect.value = [];
-    const docIds = ref();
-    const doc = ref();
-    const modalVisible = ref(false);
-    const modalLoading = ref(false);
+            levelTree.value = [];
+            levelTree.value = Tool.array2Tree(docs.value, "0");
+            console.log("树形结构：", levelTree);
 
-    const handleModalOk = () => {
-      modalLoading.value = true;
-      // doc.value.doc1Id = docIds.value[0];
-      // doc.value.doc2Id = docIds.value[1];
-      axios.post("/doc/save", doc.value).then((response) => {
-        modalLoading.value = false;
-        const data = response.data; // data = commonResp
-        if (data.success) {
-          modalVisible.value = false;
-
-          // 重新加载列表
-          handleQuery({});
-        } else {
-          message.error(data.message);
-        }
-      });
-    };
-
-    const setDisabled = (data: any, id: string) => {
-      data.forEach((item: any) => {
-        if(item.id === id){
-          item.disabled = true;
-          const children = item.children;
-          if(Tool.isNotEmpty(children)){
-            children.forEach((citem: any) => {
-              setDisabled(children,citem.id);
-            });
+            // 父节点下拉框初始化，相当于点击新增
+            treeSelectData.value = Tool.copy(levelTree.value) || [];
+            // 为选择树添加一个"无"
+            treeSelectData.value.unshift({id: 0, name: '无'});
+          } else {
+            message.error(data.message);
           }
-        }else{
-          const children = item.children;
-          if(Tool.isNotEmpty(children)){
-            setDisabled(children,id);
-          }
-        }
-
-      });
-    };
-    const ids:Array<string> = [];
-    const DeleteIds = (data: any, id: string) => {
-      data.forEach((item: any) => {
-        if(item.id === id){
-          ids.push(item.id);
-          const children = item.children;
-          if(Tool.isNotEmpty(children)){
-            children.forEach((citem: any) => {
-              DeleteIds(children,citem.id);
-            });
-          }
-        }else{
-          const children = item.children;
-          if(Tool.isNotEmpty(children)){
-            DeleteIds(children,id);
-          }
-        }
-
-      });
-    };
-
-    /**
-     * 编辑
-     */
-    const edit = (record: any) => {
-      modalVisible.value = true;
-      doc.value = Tool.copy(record);
-      /*
-      *如果我不copy，而是直接赋值，那么当我修改表单数据但点击取消.
-      * 再点击编辑，查看表单数据时,会发现表单数据已经被修改了.
-      * 这是因为直接赋值，是引用赋值，所以修改表单数据，会直接修改原始数据
-      * 而copy是深拷贝，所以修改表单数据，不会影响原始数据
-      * */
-      leveltreeSelect.value = Tool.copy(levelTree.value);
-      setDisabled(leveltreeSelect.value,record.id);
-      leveltreeSelect.value.unshift({id: "0", name: "无"});
-      setTimeout(() => {
-        const editor = new E('#content');
-        editor.create();
-      }, 100);
-    };
-
-
-
-    /**
-     * 新增
-     */
-    const add = () => {
-      modalVisible.value = true;
-      doc.value = {
-        ebookId: route.query.ebookId,
+        });
       };
-      leveltreeSelect.value = Tool.copy(levelTree.value);
-      leveltreeSelect.value.unshift({id: "0", name: "无"});
-      setTimeout(() => {
-        const editor = new E('#content');
+      // const handleQuery = (params: any) => {
+      //       loading.value = true;
+      //       levelTree.value = [];
+      //       axios.get("/doc/all", {
+      //         params: {
+      //           name: param.value.name // 从响应式变量 param 中取值
+      //         }
+      //       }).then((response) => {
+      //         loading.value = false;
+      //         const data = response.data;
+      //         if (data.success) {
+      //           docs.value = data.content;
+      //           console.log("原始文档数组", docs.value);
+      //
+      //           levelTree.value = [];
+      //           levelTree.value = Tool.array2Tree(docs.value, "0");
+      //           console.log("文档树", levelTree);
+      //           // 父节点下拉框初始化，相当于点击新增
+      //           treeSelectData.value = Tool.copy(levelTree.value) || [];
+      //           // 为选择树添加一个"无"
+      //           treeSelectData.value.unshift({id: 0, name: '无'});
+      //         } else {
+      //           message.error(data.message);
+      //         }
+      //       });
+      //     };
+      // -------- 表单 ---------
+      const doc = ref();
+      doc.value = {
+        ebookId: route.query.ebookId
+      };
+      const modalVisible = ref(false);
+      const modalLoading = ref(false);
+      // const editor = new E('#content');
+      // editor.config.zIndex = 0;
+      let editor: any;
+
+      const handleSave = () => {
+        modalLoading.value = true;
+        doc.value.content = editor.txt.html();
+        axios.post("/doc/save", doc.value).then((response) => {
+          modalLoading.value = false;
+          const data = response.data; // data = commonResp
+          if (data.success) {
+            // modalVisible.value = false;
+            message.success("保存成功！");
+
+            // 重新加载列表
+            handleQuery({});
+          } else {
+            message.error(data.message);
+          }
+        });
+      };
+
+      /**
+       * 将某节点及其子孙节点全部置为disabled
+       */
+      const setDisabled = (data: any, id: string) => {
+        data.forEach((item: any) => {
+          if(item.id === id){
+            item.disabled = true;
+            const children = item.children;
+            if(Tool.isNotEmpty(children)){
+              children.forEach((citem: any) => {
+                setDisabled(children,citem.id);
+              });
+            }
+          }else{
+            const children = item.children;
+            if(Tool.isNotEmpty(children)){
+              setDisabled(children,id);
+            }
+          }
+
+        });
+      };
+
+      const deleteIds: Array<string> = [];
+      const deleteNames: Array<string> = [];
+      /**
+       * 查找整根树枝
+       */
+      const ids:Array<string> = [];
+      const getDeleteIds = (data: any, id: string) => {
+        data.forEach((item: any) => {
+          if(item.id === id){
+            ids.push(item.id);
+            const children = item.children;
+            if(Tool.isNotEmpty(children)){
+              children.forEach((citem: any) => {
+                getDeleteIds(children,citem.id);
+              });
+            }
+          }else{
+            const children = item.children;
+            if(Tool.isNotEmpty(children)){
+              getDeleteIds(children,id);
+            }
+          }
+
+        });
+      };
+
+      /**
+       * 内容查询
+       **/
+      const handleQueryContent = () => {
+        axios.get("/doc/find-content/" + doc.value.id).then((response) => {
+          const data = response.data;
+          if (data.success) {
+            editor.txt.html(data.content)
+          } else {
+            message.error(data.message);
+          }
+        });
+      };
+
+      /**
+       * 编辑
+       */
+      const edit = (record: any) => {
+        // 清空富文本框
+        editor.txt.html("");
+        modalVisible.value = true;
+        doc.value = Tool.copy(record);
+        handleQueryContent();
+
+        // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
+        treeSelectData.value = Tool.copy(levelTree.value);
+        setDisabled(treeSelectData.value, record.id);
+
+        // 为选择树添加一个"无"
+        treeSelectData.value.unshift({id: "0", name: '无'});
+      };
+
+      /**
+       * 新增
+       */
+      const add = () => {
+        // 清空富文本框
+        editor.txt.html("");
+        modalVisible.value = true;
+        doc.value = {
+          ebookId: route.query.ebookId
+        };
+
+        treeSelectData.value = Tool.copy(levelTree.value) || [];
+
+        // 为选择树添加一个"无"
+        treeSelectData.value.unshift({id: "0", name: '无'});
+      };
+
+      const handleDelete = (id: string) => {
+        // console.log(levelTree, levelTree.value, id)
+        // 清空数组，否则多次删除时，数组会一直增加
+        deleteIds.length = 0;
+        deleteNames.length = 0;
+        getDeleteIds(levelTree.value, id);
+        Modal.confirm({
+          title: '重要提醒',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+          onOk() {
+            // console.log(ids)
+            axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+              const data = response.data; // data = commonResp
+              if (data.success) {
+                // 重新加载列表
+                handleQuery({});
+              } else {
+                message.error(data.message);
+              }
+            });
+          },
+        });
+      };
+
+      // ----------------富文本预览--------------
+      const drawerVisible = ref(false);
+      const previewHtml = ref();
+      const handlePreviewContent = () => {
+        const html = editor.txt.html();
+        previewHtml.value = html;
+        drawerVisible.value = true;
+      };
+      const onDrawerClose = () => {
+        drawerVisible.value = false;
+      };
+
+      onMounted(() => {
+        handleQuery({});
+        editor = new E('#content');
+        editor.config.zIndex = 0;
         editor.create();
-      }, 100);
-      // console.log("leveltreeSelect",leveltreeSelect);
-    };
-
-    const handleDelete = (id: string) => {
-      DeleteIds(levelTree.value,id);
-      axios.post("/doc/delete/" + ids.join(",")).then((response) => {
-        const data = response.data; // data = commonResp
-        if (data.success) {
-          // 重新加载列表
-          handleQuery({});
-        } else {
-          message.error(data.message);
-        }
+        // editor.create();
       });
-    };
 
-    const getDocName = (cid: string) => {
-      console.log("cid",cid)
-      let result = "";
-      if(cid==="0"){
-        result = "无";
-        return result;
+      return {
+        param,
+        // docs,
+        levelTree,
+        columns,
+        loading,
+        handleQuery,
+
+        edit,
+        add,
+
+        doc,
+        modalVisible,
+        modalLoading,
+        handleSave,
+
+        handleDelete,
+
+        treeSelectData,
+
+        drawerVisible,
+        previewHtml,
+        handlePreviewContent,
+        onDrawerClose,
       }
-      docs.value.forEach((item: any) => {
-        //查看item.if类型
-        console.log("item.id",item.id)
-        if (item.id === cid) {
-          // return item.name; // 注意，这里直接return不起作用
-          result = item.name;
-          console.log("result",result)
-        }
-      });
-      return result;
-    };
-
-
-    onMounted(() => {
-      handleQuery({});
-    });
-
-    return {
-      param,
-      docs,
-      levelTree,
-      columns,
-      loading,
-      handleQuery,
-
-      edit,
-      add,
-
-      doc,
-      modalVisible,
-      modalLoading,
-      handleModalOk,
-      docIds,
-      leveltreeSelect,
-
-      handleDelete,
-      getDocName
     }
-  }
-});
+  });
 </script>
 
 <style scoped>
-img {
-  width: 50px;
-  height: 50px;
-}
+  img {
+    width: 50px;
+    height: 50px;
+  }
 </style>
