@@ -19,6 +19,17 @@ public class DocSaveReq {
     @NotNull(message = "【父级目录】不能为空")
     private Long parentId;
 
+    public @NotNull(message = "【内容】不能为空") String getContent() {
+        return content;
+    }
+
+    public void setContent(@NotNull(message = "【内容】不能为空") String content) {
+        this.content = content;
+    }
+
+    @NotNull(message = "【内容】不能为空")
+    private String content;
+
     @NotNull(message = "【优先级】不能为空")
     private Integer priority;
 

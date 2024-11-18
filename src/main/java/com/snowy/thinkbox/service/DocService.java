@@ -2,8 +2,10 @@ package com.snowy.thinkbox.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.snowy.thinkbox.domain.Content;
 import com.snowy.thinkbox.domain.Doc;
 import com.snowy.thinkbox.domain.DocExample;
+import com.snowy.thinkbox.mapper.ContentMapper;
 import com.snowy.thinkbox.mapper.DocMapper;
 import com.snowy.thinkbox.req.DocQueryReq;
 import com.snowy.thinkbox.req.DocSaveReq;
@@ -14,6 +16,7 @@ import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -26,7 +29,11 @@ public class DocService {
     private DocMapper docMapper;
 
     @Resource
+    private ContentMapper contentMapper;
+
+    @Resource
     private SnowFlake snowFlake;
+
 
     public PageResp<DocQueryResp> list(DocQueryReq docQueryReq) {
         DocExample docExample = new DocExample();
@@ -50,13 +57,20 @@ public class DocService {
 
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
             doc.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
             docMapper.insert(doc);
-        } else {
-            // 更新
+            content.setId(doc.getId());
+            contentMapper.insert(content);
+        }else{
+            //更新
             docMapper.updateByPrimaryKey(doc);
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (count == 0) {
+                contentMapper.insert(content);
+            }
         }
     }
 
