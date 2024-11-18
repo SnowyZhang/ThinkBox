@@ -21,7 +21,6 @@
           </a-form-item>
         </a-form>
       </p>
-
       <a-table
           :columns="columns"
           :row-key="(record:any) => record.id"
@@ -122,6 +121,9 @@
       <a-form-item label="优先级">
         <a-input v-model:value="doc.priority" />
       </a-form-item>
+      <a-form-item label="内容">
+        <div id="content"></div>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -132,6 +134,7 @@ import axios from 'axios';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
+import E from 'wangeditor';
 
 export default defineComponent({
   name: 'AdminDoc',
@@ -216,6 +219,7 @@ export default defineComponent({
     const doc = ref();
     const modalVisible = ref(false);
     const modalLoading = ref(false);
+
     const handleModalOk = () => {
       modalLoading.value = true;
       // doc.value.doc1Id = docIds.value[0];
@@ -281,7 +285,7 @@ export default defineComponent({
       modalVisible.value = true;
       doc.value = Tool.copy(record);
       /*
-      *如果我不copy，而是直接赋值，那么当我修改表单数据，然后点击取消.
+      *如果我不copy，而是直接赋值，那么当我修改表单数据但点击取消.
       * 再点击编辑，查看表单数据时,会发现表单数据已经被修改了.
       * 这是因为直接赋值，是引用赋值，所以修改表单数据，会直接修改原始数据
       * 而copy是深拷贝，所以修改表单数据，不会影响原始数据
@@ -289,6 +293,10 @@ export default defineComponent({
       leveltreeSelect.value = Tool.copy(levelTree.value);
       setDisabled(leveltreeSelect.value,record.id);
       leveltreeSelect.value.unshift({id: "0", name: "无"});
+      setTimeout(() => {
+        const editor = new E('#content');
+        editor.create();
+      }, 100);
     };
 
 
@@ -303,7 +311,11 @@ export default defineComponent({
       };
       leveltreeSelect.value = Tool.copy(levelTree.value);
       leveltreeSelect.value.unshift({id: "0", name: "无"});
-      console.log("leveltreeSelect",leveltreeSelect);
+      setTimeout(() => {
+        const editor = new E('#content');
+        editor.create();
+      }, 100);
+      // console.log("leveltreeSelect",leveltreeSelect);
     };
 
     const handleDelete = (id: string) => {
