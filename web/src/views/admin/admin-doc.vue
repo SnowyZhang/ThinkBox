@@ -205,7 +205,7 @@
         loading.value = true;
         // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
         levelTree.value = [];
-        axios.get("/doc/all/" + route.query.ebookId).then((response) => {
+        axios.post("/doc/all/" + route.query.ebookId).then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success) {
@@ -273,7 +273,7 @@
             message.success("保存成功！");
 
             // 重新加载列表
-            handleQuery({});
+            handleQuery();
           } else {
             message.error(data.message);
           }
@@ -308,11 +308,11 @@
       /**
        * 查找整根树枝
        */
-      const ids:Array<string> = [];
       const getDeleteIds = (data: any, id: string) => {
         data.forEach((item: any) => {
           if(item.id === id){
-            ids.push(item.id);
+            deleteIds.push(item.id);
+            deleteNames.push(item.name);
             const children = item.children;
             if(Tool.isNotEmpty(children)){
               children.forEach((citem: any) => {
@@ -351,7 +351,7 @@
         editor.txt.html("");
         modalVisible.value = true;
         doc.value = Tool.copy(record);
-        handleQueryContent();
+        // handleQueryContent();
 
         // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
         treeSelectData.value = Tool.copy(levelTree.value);
@@ -390,11 +390,11 @@
           content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
           onOk() {
             // console.log(ids)
-            axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+            axios.post("/doc/delete/" + deleteIds.join(",")).then((response) => {
               const data = response.data; // data = commonResp
               if (data.success) {
                 // 重新加载列表
-                handleQuery({});
+                handleQuery();
               } else {
                 message.error(data.message);
               }
@@ -416,7 +416,7 @@
       };
 
       onMounted(() => {
-        handleQuery({});
+        handleQuery();
         editor = new E('#content');
         editor.config.zIndex = 0;
         editor.create();

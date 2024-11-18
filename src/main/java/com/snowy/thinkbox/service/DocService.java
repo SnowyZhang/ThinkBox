@@ -67,12 +67,12 @@ public class DocService {
         docMapper.deleteByExample(docExample);
     }
 
-    public List<DocQueryResp> all(DocQueryReq docQueryReq) {
+    public List<DocQueryResp> all(String ebookId) {
         DocExample docExample = new DocExample();
         docExample.setOrderByClause("priority asc");
         DocExample.Criteria criteria = docExample.createCriteria();
-        if (!ObjectUtils.isEmpty(docQueryReq.getName())) {
-            criteria.andNameLike("%" + docQueryReq.getName() + "%");
+        if (!ObjectUtils.isEmpty(ebookId)) {
+            criteria.andEbookIdEqualTo(Long.valueOf(ebookId));
         }
         List<Doc> docList =  docMapper.selectByExample(docExample);
         return CopyUtil.copyList(docList, DocQueryResp.class);
