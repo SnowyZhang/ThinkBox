@@ -131,6 +131,7 @@ import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
+import {useRoute} from "vue-router";
 
 export default defineComponent({
   name: 'AdminDoc',
@@ -139,6 +140,7 @@ export default defineComponent({
     param.value = {};
     const docs = ref();
     const loading = ref(false);
+    const route = useRoute();
 
     const columns = [
       {
@@ -251,6 +253,26 @@ export default defineComponent({
 
       });
     };
+    const ids:Array<string> = [];
+    const DeleteIds = (data: any, id: string) => {
+      data.forEach((item: any) => {
+        if(item.id === id){
+          ids.push(item.id);
+          const children = item.children;
+          if(Tool.isNotEmpty(children)){
+            children.forEach((citem: any) => {
+              DeleteIds(children,citem.id);
+            });
+          }
+        }else{
+          const children = item.children;
+          if(Tool.isNotEmpty(children)){
+            DeleteIds(children,id);
+          }
+        }
+
+      });
+    };
 
     /**
      * 编辑
@@ -276,13 +298,17 @@ export default defineComponent({
      */
     const add = () => {
       modalVisible.value = true;
-      doc.value = {};
+      doc.value = {
+        ebookId: route.query.ebookId,
+      };
       leveltreeSelect.value = Tool.copy(levelTree.value);
       leveltreeSelect.value.unshift({id: "0", name: "无"});
+      console.log("leveltreeSelect",leveltreeSelect);
     };
 
     const handleDelete = (id: string) => {
-      axios.post("/doc/delete/" + id).then((response) => {
+      DeleteIds(levelTree.value,id);
+      axios.post("/doc/delete/" + ids.join(",")).then((response) => {
         const data = response.data; // data = commonResp
         if (data.success) {
           // 重新加载列表
