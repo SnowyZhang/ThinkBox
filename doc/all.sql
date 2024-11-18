@@ -79,3 +79,10 @@ CREATE TABLE `doc` (
 INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (1, '文档1', 1, 0, 1,0,0);
 INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (2, '文档2', 2, 0, 2,0,0);
 INSERT INTO `doc`(id, name, ebook_id, parent_id, priority,view_count, vote_count) VALUES (3, '文档1.1', 1, 1, 3,0,0);
+
+drop table if exists `content`;
+CREATE TABLE `content` (
+  `id` BIGINT NOT NULL COMMENT '文档id',
+  `content` mediumtext not null comment '内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档内容';
