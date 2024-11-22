@@ -14,6 +14,7 @@ import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
 import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,4 +92,14 @@ public class DocService {
         List<Doc> docList =  docMapper.selectByExample(docExample);
         return CopyUtil.copyList(docList, DocQueryResp.class);
     }
+
+    public  String findContent(String id) {
+        Content content = contentMapper.selectByPrimaryKey(Long.valueOf(id));
+        //判断是否为空
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        }
+        return content.getContent();
+    }
+
 }
