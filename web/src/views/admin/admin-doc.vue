@@ -19,37 +19,6 @@
               </a-form-item>
             </a-form>
           </p>
-<!--          <a-table-->
-<!--            v-if="levelTree.length > 0"-->
-<!--            :columns="columns"-->
-<!--            :row-key="(record:any) => record.id"-->
-<!--            :data-source="levelTree"-->
-<!--            :loading="loading"-->
-<!--            :pagination="false"-->
-<!--            size="small"-->
-<!--            :defaultExpandAllRows="true"-->
-<!--          >-->
-<!--            <template #name="{ text, record }">-->
-<!--              {{record.sort}} {{text}}-->
-<!--            </template>-->
-<!--            <template v-slot:action="{ text, record }">-->
-<!--              <a-space size="small">-->
-<!--                <a-button type="primary" @click="edit(record)" size="small">-->
-<!--                  编辑-->
-<!--                </a-button>-->
-<!--                <a-popconfirm-->
-<!--                  title="删除后不可恢复，确认删除?"-->
-<!--                  ok-text="是"-->
-<!--                  cancel-text="否"-->
-<!--                  @confirm="handleDelete(record.id)"-->
-<!--                >-->
-<!--                  <a-button type="primary" danger  size="small">-->
-<!--                    删除-->
-<!--                  </a-button>-->
-<!--                </a-popconfirm>-->
-<!--              </a-space>-->
-<!--            </template>-->
-<!--          </a-table>-->
           <a-table
               v-if="levelTree.length > 0"
               :columns="columns"
@@ -135,20 +104,11 @@
       </a-row>
 
       <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
-        <div class="wangeditor" :innerHTML="previewHtml"></div>
+        <div class="editor-content-view" :innerHTML="previewHtml"></div>
       </a-drawer>
 
     </a-layout-content>
   </a-layout>
-
-  <!--<a-modal-->
-  <!--  title="文档表单"-->
-  <!--  v-model:visible="modalVisible"-->
-  <!--  :confirm-loading="modalLoading"-->
-  <!--  @ok="handleModalOk"-->
-  <!--&gt;-->
-  <!--  -->
-  <!--</a-modal>-->
 </template>
 
 <script lang="ts">
@@ -216,7 +176,7 @@
             levelTree.value = Tool.array2Tree(docs.value, "0");
             console.log("树形结构：", levelTree);
 
-            // 父节点下拉框初始化，相当于点击新增
+            // 父节点下拉框初始化，希望一打开界面就有数据，而不是点击新增时才有数据
             treeSelectData.value = Tool.copy(levelTree.value) || [];
             // 为选择树添加一个"无"
             treeSelectData.value.unshift({id: 0, name: '无'});
@@ -225,32 +185,7 @@
           }
         });
       };
-      // const handleQuery = (params: any) => {
-      //       loading.value = true;
-      //       levelTree.value = [];
-      //       axios.get("/doc/all", {
-      //         params: {
-      //           name: param.value.name // 从响应式变量 param 中取值
-      //         }
-      //       }).then((response) => {
-      //         loading.value = false;
-      //         const data = response.data;
-      //         if (data.success) {
-      //           docs.value = data.content;
-      //           console.log("原始文档数组", docs.value);
-      //
-      //           levelTree.value = [];
-      //           levelTree.value = Tool.array2Tree(docs.value, "0");
-      //           console.log("文档树", levelTree);
-      //           // 父节点下拉框初始化，相当于点击新增
-      //           treeSelectData.value = Tool.copy(levelTree.value) || [];
-      //           // 为选择树添加一个"无"
-      //           treeSelectData.value.unshift({id: 0, name: '无'});
-      //         } else {
-      //           message.error(data.message);
-      //         }
-      //       });
-      //     };
+
       // -------- 表单 ---------
       const doc = ref();
       doc.value = {

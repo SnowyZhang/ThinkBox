@@ -2,7 +2,8 @@
   <a-layout>
     <a-layout-content
       :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <a-row :gutter="24">
+      <h2 v-if="levelTree.length === 0">暂无文档</h2>
+      <a-row >
         <a-col :span="6">
           <a-tree
               v-if="levelTree.length > 0"
@@ -10,10 +11,11 @@
             :defaultExpandAll="true"
             @select="onSelect"
             :field-names="{title: 'name', key: 'id'}"
+              :defaultSelectedKeys="defaultSelectedKeys"
           />
         </a-col>
         <a-col :span="18">
-
+          <div class="editor-content-view" v-html="contentHtml"> </div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -27,6 +29,7 @@ import axios from 'axios';
 import { message } from "ant-design-vue";
 import { Tool } from "@/util/tool";
 import {useRoute} from "vue-router";
+import {createEditor} from "@wangeditor/editor";
 
 export default defineComponent({
   name: 'Doc',
@@ -35,6 +38,13 @@ export default defineComponent({
     levelTree.value = [];
     const docs = ref();
     const route = useRoute();
+    const contentHtml = ref("");
+    const defaultSelectedKeys = ref();
+    defaultSelectedKeys.value = [];
+    // const editor = createEditor({
+    //   html: '<p>hello <strong>world</strong></p>', // 从 editor.getHtml() 获取的 html 内容
+    //   // 其他属性...
+    // })
 
     /**
      * 数据查询
@@ -52,21 +62,102 @@ export default defineComponent({
           levelTree.value = Tool.array2Tree(docs.value, "0");
           console.log("树形结构：", levelTree);
 
-          // 父节点下拉框初始化，相当于点击新增
+          if(Tool.isNotEmpty(levelTree.value)){
+            defaultSelectedKeys.value = [levelTree.value[0].id];
+            handleQueryContent(levelTree.value[0].id);
+          }
 
         } else {
           message.error(data.message);
         }
       });
     };
+
+    const handleQueryContent = (id:string) => {
+      axios.get("/doc/content/" + id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          contentHtml.value = data.content;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
+
+    const onSelect = (selectedKeys: any, info: any) => {
+      console.log("selected", selectedKeys, info);
+      if(Tool.isNotEmpty(selectedKeys)){
+        console.log("selectedKeys[0]:", selectedKeys[0]);
+        handleQueryContent(selectedKeys[0]);
+      }
+    };
+
     onMounted(() => {
       handleQuery();
     });
 
     return {
       levelTree,
+      contentHtml,
+      onSelect,
+      defaultSelectedKeys
     };
   }
 });
 
 </script>
+
+<style>
+.editor-content-view {
+  border: 0px solid #ccc;
+  border-radius: 5px;
+  padding: 0 10px;
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.editor-content-view p,
+.editor-content-view li {
+  white-space: pre-wrap; /* 保留空格 */
+}
+
+.editor-content-view blockquote {
+  border-left: 8px solid #d0e5f2;
+  padding: 10px 10px;
+  margin: 10px 0;
+  background-color: #f1f1f1;
+}
+
+.editor-content-view code {
+  font-family: monospace;
+  background-color: #eee;
+  padding: 3px;
+  border-radius: 3px;
+}
+.editor-content-view pre>code {
+  display: block;
+  padding: 10px;
+}
+
+.editor-content-view table {
+  border-collapse: collapse;
+}
+.editor-content-view td,
+.editor-content-view th {
+  border: 1px solid #ccc;
+  min-width: 50px;
+  height: 20px;
+}
+.editor-content-view th {
+  background-color: #f1f1f1;
+}
+
+.editor-content-view ul,
+.editor-content-view ol {
+  padding-left: 20px;
+}
+
+.editor-content-view input[type="checkbox"] {
+  margin-right: 5px;
+}
+</style>

@@ -86,9 +86,7 @@ public class DocService {
         DocExample docExample = new DocExample();
         docExample.setOrderByClause("priority asc");
         DocExample.Criteria criteria = docExample.createCriteria();
-        if (!ObjectUtils.isEmpty(ebookId)) {
-            criteria.andEbookIdEqualTo(Long.valueOf(ebookId));
-        }
+        criteria.andEbookIdEqualTo(Long.valueOf(ebookId));
         List<Doc> docList =  docMapper.selectByExample(docExample);
         return CopyUtil.copyList(docList, DocQueryResp.class);
     }
