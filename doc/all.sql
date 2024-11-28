@@ -86,3 +86,56 @@ CREATE TABLE `content` (
   `content` mediumtext not null comment '内容',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文档内容';
+
+# drop table if exists `users`;
+# drop table if exists `roles`;
+# drop table if exists `user_roles`;
+# drop table if exists `comments`;
+#
+# CREATE TABLE roles (
+#                        id BIGINT PRIMARY KEY PRIMARY KEY,  -- 角色 ID
+#                        role_name VARCHAR(255) NOT NULL,  -- 角色名称（如 "admin", "user","guest"）
+#                        description VARCHAR(255)  -- 角色描述
+# );
+# CREATE TABLE users (
+#                        id BIGINT PRIMARY KEY,  -- 用户 ID
+#                        username VARCHAR(255) NOT NULL,  -- 用户名
+#                        email VARCHAR(255) UNIQUE,  -- 用户邮箱，确保唯一
+#                        password VARCHAR(255),  -- 用户密码（仅适用于普通注册）
+#                        profile_picture VARCHAR(255),  -- 用户头像 URL
+#                        third_party_provider VARCHAR(255),  -- 第三方平台（如 GitHub、Google）
+#                        third_party_id VARCHAR(255),  -- 第三方平台的用户唯一标识符
+#                        third_party_access_token VARCHAR(255),  -- OAuth2 access token
+#                        third_party_refresh_token VARCHAR(255),  -- OAuth2 refresh token
+#                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间
+#                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- 更新时间
+#                        is_active BOOLEAN DEFAULT TRUE,  -- 是否激活
+#                        is_deleted BOOLEAN DEFAULT FALSE,  -- 是否删除
+#                        role_id BIGINT,  -- 用户角色（外键，关联角色表）
+#                        FOREIGN KEY (role_id) REFERENCES roles(id)  -- 外键，关联角色表
+# );
+# CREATE TABLE user_roles (
+#                             user_id BIGINT,  -- 用户 ID（外键，关联用户表）
+#                             role_id BIGINT,  -- 角色 ID（外键，关联角色表）
+#                             PRIMARY KEY (user_id, role_id),  -- 联合主键
+#                             FOREIGN KEY (user_id) REFERENCES users(id),  -- 外键，关联用户表
+#                             FOREIGN KEY (role_id) REFERENCES roles(id)  -- 外键，关联角色表
+# );
+# CREATE TABLE comments (
+#                           id BIGINT PRIMARY KEY,  -- 评论 ID
+#                           user_id BIGINT,  -- 评论作者（外键，关联 users 表）
+#                           doc_id BIGINT,  -- 评论的文章 ID（外键，关联 posts 表）
+#                           content TEXT NOT NULL,  -- 评论内容
+#                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间
+#                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- 更新时间
+#                           FOREIGN KEY (user_id) REFERENCES users(id),  -- 关联用户表
+#                           FOREIGN KEY (doc_id) REFERENCES doc(id)  -- 关联文档表
+# );
+
+drop table if exists `user`;
+CREATE TABLE `user` (
+  `id` BIGINT NOT NULL COMMENT 'id',
+  `name` VARCHAR(50) COMMENT '用户名',
+  `password` VARCHAR(50) COMMENT '密码',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户';
