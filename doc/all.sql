@@ -135,7 +135,9 @@ CREATE TABLE `content` (
 drop table if exists `user`;
 CREATE TABLE `user` (
   `id` BIGINT NOT NULL COMMENT 'id',
-  `name` VARCHAR(50) COMMENT '用户名',
-  `password` VARCHAR(50) COMMENT '密码',
-  PRIMARY KEY (`id`)
+  `login_name` VARCHAR(50) COMMENT '登录名',
+    `name` VARCHAR(50) COMMENT '名称',
+    `password` VARCHAR(50) COMMENT '密码',
+    primary key (`id`),
+    unique key `login_name_unique` (`login_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户';
