@@ -1,15 +1,23 @@
-package com.snowy.thinkbox.domain;
+package com.snowy.thinkbox.req;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.Length;
 
-public class User {
+public class UserSaveReq {
     private Long id;
 
+    @NotNull(message = "Login name cannot be empty")
     private String loginName;
 
+    @NotNull(message = "Name cannot be empty")
     private String name;
 
+    @NotNull(message = "Password cannot be empty")
+    @Length(min = 6, max = 20, message = "Password length must be between 6 and 20 characters")
+    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$", message = "Password must contain both letters and numbers")
     private String password;
 
     @JsonSerialize(using = ToStringSerializer.class)

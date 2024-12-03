@@ -141,3 +141,5 @@ CREATE TABLE `user` (
     primary key (`id`),
     unique key `login_name_unique` (`login_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户';
+
+insert into `user` (id,login_name,name,password) values (1,'admin','管理员','123456');

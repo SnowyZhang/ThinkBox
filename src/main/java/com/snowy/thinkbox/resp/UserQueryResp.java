@@ -1,9 +1,9 @@
-package com.snowy.thinkbox.domain;
+package com.snowy.thinkbox.resp;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
-public class User {
+public class UserQueryResp {
     private Long id;
 
     private String loginName;
