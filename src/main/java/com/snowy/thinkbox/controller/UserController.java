@@ -8,6 +8,7 @@ import com.snowy.thinkbox.resp.UserQueryResp;
 import com.snowy.thinkbox.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,6 +28,7 @@ public class UserController {
 
     @PostMapping("/save")
     public CommonResp save(@RequestBody @Valid UserSaveReq req){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes())); // 对密码进行MD5加密
         CommonResp resp = new CommonResp<>();
         userService.save(req);
         return resp;
