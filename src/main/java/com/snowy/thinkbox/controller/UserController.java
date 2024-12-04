@@ -1,10 +1,12 @@
 package com.snowy.thinkbox.controller;
 
+import com.snowy.thinkbox.req.UserLoginReq;
 import com.snowy.thinkbox.req.UserQueryReq;
 import com.snowy.thinkbox.req.UserResetPasswordReq;
 import com.snowy.thinkbox.req.UserSaveReq;
 import com.snowy.thinkbox.resp.CommonResp;
 import com.snowy.thinkbox.resp.PageResp;
+import com.snowy.thinkbox.resp.UserLoginResp;
 import com.snowy.thinkbox.resp.UserQueryResp;
 import com.snowy.thinkbox.service.UserService;
 import jakarta.annotation.Resource;
@@ -40,6 +42,14 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes())); // 对密码进行MD5加密
         CommonResp resp = new CommonResp<>();
         userService.resetPassword(req);
+        return resp;
+    }
+    @PostMapping("/login")
+    public CommonResp login(@RequestBody @Valid UserLoginReq req){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes())); // 对密码进行MD5加密
+        CommonResp<UserLoginResp> resp = new CommonResp<>();
+        UserLoginResp userLoginResp = userService.login(req);
+        resp.setContent(userLoginResp);
         return resp;
     }
 

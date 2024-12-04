@@ -7,10 +7,12 @@ import com.snowy.thinkbox.domain.UserExample;
 import com.snowy.thinkbox.exception.BusinessException;
 import com.snowy.thinkbox.exception.BusinessExceptionCode;
 import com.snowy.thinkbox.mapper.UserMapper;
+import com.snowy.thinkbox.req.UserLoginReq;
 import com.snowy.thinkbox.req.UserQueryReq;
 import com.snowy.thinkbox.req.UserResetPasswordReq;
 import com.snowy.thinkbox.req.UserSaveReq;
 import com.snowy.thinkbox.resp.PageResp;
+import com.snowy.thinkbox.resp.UserLoginResp;
 import com.snowy.thinkbox.resp.UserQueryResp;
 import com.snowy.thinkbox.utils.CopyUtil;
 import com.snowy.thinkbox.utils.SnowFlake;
@@ -98,5 +100,21 @@ public class UserService {
     public void resetPassword(@Valid UserResetPasswordReq req) {
         User user = CopyUtil.copy(req, User.class);
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    public UserLoginResp login(@Valid UserLoginReq req) {
+        User user = selectByLoginName(req.getLoginName());
+        if(user == null) {
+            LOG.info("username does not exist {}", req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+        } else {
+            if(user.getPassword().equals(req.getPassword())) {
+                // 登录成功
+                return CopyUtil.copy(user, UserLoginResp.class);
+            } else {
+                LOG.info("password is incorrect, database password is {} and input password is {}", user.getPassword(), req.getPassword());
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
+        }
     }
 }
