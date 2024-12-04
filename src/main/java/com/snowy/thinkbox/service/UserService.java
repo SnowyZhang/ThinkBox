@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.snowy.thinkbox.domain.User;
 import com.snowy.thinkbox.domain.UserExample;
+import com.snowy.thinkbox.exception.BusinessException;
+import com.snowy.thinkbox.exception.BusinessExceptionCode;
 import com.snowy.thinkbox.mapper.UserMapper;
 import com.snowy.thinkbox.req.UserQueryReq;
 import com.snowy.thinkbox.req.UserSaveReq;
@@ -60,8 +62,13 @@ public class UserService {
         User user = CopyUtil.copy(req, User.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
-            user.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
-            userMapper.insert(user);
+            if(selectByLoginName(user.getLoginName())!=null){
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+
+            }else{
+                user.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
+                userMapper.insert(user);
+            }
         } else {
             // 更新
             userMapper.updateByPrimaryKey(user);
@@ -70,5 +77,17 @@ public class UserService {
 
     public void delete(Long id) {
         userMapper.deleteByPrimaryKey(id);
+    }
+
+    public User selectByLoginName(String loginName) {
+        UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andLoginNameEqualTo(loginName);
+        List<User> userList = userMapper.selectByExample(userExample);
+        if (userList.size() == 0) {
+            return null;
+        } else {
+            return userList.get(0);
+        }
     }
 }
