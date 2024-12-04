@@ -6,7 +6,7 @@
       <p>
         <a-form layout="inline" :model="param">
           <a-form-item>
-            <a-input v-model="param.loginName" placeholder="登陆名">
+            <a-input v-model:value="param.loginName" placeholder="登陆名">
             </a-input>
           </a-form-item>
           <a-form-item>
@@ -86,13 +86,13 @@
   >
     <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
       <a-form-item label="登陆名">
-        <a-input v-model="user.loginName" :disabled="!!user.id"/>
+        <a-input v-model:value="user.loginName" :disabled="!!user.id"/>
       </a-form-item>
       <a-form-item label="昵称">
-        <a-input v-model="user.name" />
+        <a-input v-model:value="user.name" />
       </a-form-item>
       <a-form-item label="密码" v-show="!user.id">
-        <a-input v-model="user.password"/>
+        <a-input v-model:value="user.password"/>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -112,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
@@ -159,6 +159,7 @@ export default defineComponent({
       loading.value = true;
       // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
       users.value = [];
+      console.log("param:", param)
       axios.get("/user/list", {
         params: {
           page: params.page,
@@ -170,6 +171,7 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           users.value = data.content.list;
+          console.log("Users data:", users.value);
 
           // 重置分页按钮
           pagination.value.current = params.page;
@@ -198,7 +200,7 @@ export default defineComponent({
     const handleModalOk = () => {
       modalLoading.value = true;
 
-      // user.value.password = hexMd5(user.value.password + KEY);
+      user.value.password = hexMd5(user.value.password + KEY);
 
       axios.post("/user/save", user.value).then((response) => {
         modalLoading.value = false;

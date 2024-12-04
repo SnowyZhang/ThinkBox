@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/home.vue'
 import About from '../views/about.vue'
+import AdminUser from '../views/admin/admin-user.vue'
 import AdminEbook from '../views/admin/admin-ebook.vue'
 import AdminCategory from '../views/admin/admin-category.vue'
 import AdminDoc from "@/views/admin/admin-doc.vue";
 import Doc from "../views/doc.vue";
-import AdminUser from "@/views/admin-user.vue";
+
 
 const routes: Array<RouteRecordRaw> = [
   {
