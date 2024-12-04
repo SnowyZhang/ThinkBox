@@ -200,7 +200,7 @@ export default defineComponent({
     const modalLoading = ref(false);
     const handleModalOk = () => {
       modalLoading.value = true;
-      // user.value.password = hexMd5(user.value.password + KEY);
+      user.value.password = hexMd5(user.value.password + KEY);
 
       axios.post("/user/save", user.value).then((response) => {
         modalLoading.value = false;
@@ -256,7 +256,7 @@ export default defineComponent({
     const handleResetModalOk = () => {
       resetModalLoading.value = true;
 
-      // user.value.password = hexMd5(user.value.password + KEY);
+      user.value.password = hexMd5(user.value.password + KEY);
 
       axios.post("/user/reset-password", user.value).then((response) => {
         resetModalLoading.value = false;

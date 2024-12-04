@@ -4,10 +4,9 @@ import com.snowy.thinkbox.domain.Test;
 import com.snowy.thinkbox.service.TestService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,6 +14,8 @@ import java.util.List;
 public class TestController {
     @Resource
     private TestService testService;
+//    @Autowired
+//    private RedisTemplate redisTemplate;
 
 
     @RequestMapping("/hello")
@@ -31,4 +32,15 @@ public class TestController {
     public List<Test> List(){
         return testService.list();
     }
+
+//    @RequestMapping("/redis/set/{key}/{value}")
+//    public String setRedis(@PathVariable  Long key,@PathVariable String value){
+//        redisTemplate.opsForValue().set(key,value);
+//        return "success";
+//    }
+//
+//    @RequestMapping("/redis/get/{key}")
+//    public String getRedis(@PathVariable  Long key){
+//        return (String) redisTemplate.opsForValue().get(key);
+//    }
 }

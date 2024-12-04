@@ -8,6 +8,9 @@ import org.hibernate.validator.constraints.Length;
 
 public class UserLoginResp {
     @JsonSerialize(using = ToStringSerializer.class)
+    private long token;
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotNull(message = "Login name cannot be empty")
@@ -15,6 +18,24 @@ public class UserLoginResp {
 
     @NotNull(message = "Name cannot be empty")
     private String name;
+
+    @Override
+    public String toString() {
+        return "UserLoginResp{" +
+                "token=" + token +
+                ", id=" + id +
+                ", loginName='" + loginName + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public long getToken() {
+        return token;
+    }
+
+    public void setToken(long token) {
+        this.token = token;
+    }
 
     @JsonSerialize(using = ToStringSerializer.class)
     public Long getId() {
@@ -42,12 +63,4 @@ public class UserLoginResp {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "UserLoginResp{" +
-                "id=" + id +
-                ", loginName='" + loginName + '\'' +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

@@ -67,7 +67,7 @@ public class UserService {
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
             if(selectByLoginName(user.getLoginName())!=null){
-                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
 
             }else{
                 user.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
@@ -106,14 +106,14 @@ public class UserService {
         User user = selectByLoginName(req.getLoginName());
         if(user == null) {
             LOG.info("username does not exist {}", req.getLoginName());
-            throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
         } else {
             if(user.getPassword().equals(req.getPassword())) {
                 // 登录成功
                 return CopyUtil.copy(user, UserLoginResp.class);
             } else {
                 LOG.info("password is incorrect, database password is {} and input password is {}", user.getPassword(), req.getPassword());
-                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
             }
         }
     }

@@ -22,8 +22,8 @@ public class UserResetPasswordReq {
     }
 
     @NotNull(message = "Password cannot be empty")
-    @Length(min = 6, max = 20, message = "Password length must be between 6 and 20 characters")
-    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$", message = "Password must contain both letters and numbers")
+    @Length(min = 6, max = 32, message = "Password length must be between 6 and 32 characters")
+    @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,32}$", message = "Password must contain both letters and numbers")
     private String password;
 
 
