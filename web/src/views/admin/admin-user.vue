@@ -105,7 +105,7 @@
   >
     <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
       <a-form-item label="新密码">
-        <a-input v-model="user.password"/>
+        <a-input v-model:value="user.password"/>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -256,7 +256,7 @@ export default defineComponent({
     const handleResetModalOk = () => {
       resetModalLoading.value = true;
 
-      user.value.password = hexMd5(user.value.password + KEY);
+      // user.value.password = hexMd5(user.value.password + KEY);
 
       axios.post("/user/reset-password", user.value).then((response) => {
         resetModalLoading.value = false;

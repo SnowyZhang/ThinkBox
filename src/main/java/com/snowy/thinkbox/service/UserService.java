@@ -8,12 +8,14 @@ import com.snowy.thinkbox.exception.BusinessException;
 import com.snowy.thinkbox.exception.BusinessExceptionCode;
 import com.snowy.thinkbox.mapper.UserMapper;
 import com.snowy.thinkbox.req.UserQueryReq;
+import com.snowy.thinkbox.req.UserResetPasswordReq;
 import com.snowy.thinkbox.req.UserSaveReq;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.resp.UserQueryResp;
 import com.snowy.thinkbox.utils.CopyUtil;
 import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -72,6 +74,7 @@ public class UserService {
         } else {
             // 更新
             user.setLoginName(null);
+            user.setPassword(null);
             userMapper.updateByPrimaryKeySelective(user);
         }
     }
@@ -90,5 +93,10 @@ public class UserService {
         } else {
             return userList.get(0);
         }
+    }
+
+    public void resetPassword(@Valid UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }

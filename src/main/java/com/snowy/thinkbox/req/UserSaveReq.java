@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 
 public class UserSaveReq {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotNull(message = "Login name cannot be empty")
