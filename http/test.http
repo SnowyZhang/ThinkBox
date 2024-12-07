@@ -21,3 +21,10 @@ name=test
 ###
 GET http://localhost:8090/test/list
 #Accept: application/json
+
+###
+GET http://localhost:8090/redis/set/123/admin
+#Accept: application/json
+
+###
+GET http://localhost:8090/redis/get/123
