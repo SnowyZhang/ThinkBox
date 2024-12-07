@@ -82,7 +82,7 @@
                 style="width: 100%"
                 :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
                 :tree-data="treeSelectData"
-                placeholder="请选择父文档"
+                placeholder="请选择父节点"
                 tree-default-expand-all
                 :fieldNames="{label: 'name', key: 'id', value: 'id'}"
               >
