@@ -235,8 +235,8 @@ export default defineComponent({
       user.value = {};
     };
 
-    const handleDelete = (id: number) => {
-      axios.delete("/user/delete/" + id).then((response) => {
+    const handleDelete = (id: string) => {
+      axios.post("/user/delete/" + id).then((response) => {
         const data = response.data; // data = commonResp
         if (data.success) {
           // 重新加载列表
