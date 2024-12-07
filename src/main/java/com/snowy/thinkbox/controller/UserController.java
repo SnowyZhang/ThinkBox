@@ -13,6 +13,8 @@ import com.snowy.thinkbox.service.UserService;
 import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,8 @@ public class UserController {
     private RedisTemplate redisTemplate;
     @Resource
     private SnowFlake snowFlake;
+
+    private static final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
 
     @GetMapping("/list")
@@ -56,8 +60,8 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes())); // 对密码进行MD5加密
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
-        Long token = snowFlake.nextId();
-        userLoginResp.setToken(token);
+        Long token =  snowFlake.nextId();
+        userLoginResp.setToken(token.toString());
         redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600); // 将登录信息存入Redis,有效期为1小时
         resp.setContent(userLoginResp);
         return resp;
@@ -81,6 +85,14 @@ public class UserController {
 
         resp.setSuccess(true);
         resp.setMessage("Delete operation successful for ID: " + id);
+        return resp;
+    }
+
+    @GetMapping("/logout/{token}") // 或使用 @DeleteMapping
+    public CommonResp logout(@PathVariable String token) {
+        CommonResp resp = new CommonResp<>();
+        redisTemplate.delete(token);
+        log.info("User logged out successfully, token: {}", token);
         return resp;
     }
 

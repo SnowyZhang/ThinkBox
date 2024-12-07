@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
 
 public class UserLoginResp {
-    @JsonSerialize(using = ToStringSerializer.class)
-    private long token;
+    private String token;
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
@@ -29,11 +28,11 @@ public class UserLoginResp {
                 '}';
     }
 
-    public long getToken() {
+    public String getToken() {
         return token;
     }
 
-    public void setToken(long token) {
+    public void setToken(String token) {
         this.token = token;
     }
 
