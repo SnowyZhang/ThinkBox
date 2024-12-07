@@ -71,8 +71,6 @@ export default defineComponent({
   setup () {
     // 登录后保存
     const user = computed(() => store.state.user);
-    // const user = ref();
-    // user.value = {};
 
     // 用来登录
     const loginUser = ref({
