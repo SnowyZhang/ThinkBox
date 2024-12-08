@@ -24,7 +24,11 @@ GET http://localhost:8090/test/list
 
 ###
 GET http://localhost:8090/redis/set/123/admin
+Content-Type: application/x-www-form-urlencoded
 #Accept: application/json
 
 ###
-GET http://localhost:8090/redis/get/123
+GET http://localhost:8090/redis/get/124060813152620544
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+###

@@ -65,4 +65,5 @@ public class TestController {
         log.info("redis取出数据成功",key,value);
         return value;
     }
+
 }
