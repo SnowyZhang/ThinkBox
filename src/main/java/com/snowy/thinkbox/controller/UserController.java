@@ -19,6 +19,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -62,7 +64,8 @@ public class UserController {
         UserLoginResp userLoginResp = userService.login(req);
         Long token =  snowFlake.nextId();
         userLoginResp.setToken(token.toString());
-        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600); // 将登录信息存入Redis,有效期为1小时
+        redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600, TimeUnit.SECONDS); // 将登录信息存入Redis,有效期为1小时
+        log.info("User logged in successfully, token: {}", token);
         resp.setContent(userLoginResp);
         return resp;
     }
