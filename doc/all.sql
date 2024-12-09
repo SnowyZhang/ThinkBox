@@ -143,3 +143,15 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户';
 
 insert into `user` (id,login_name,name,password) values (1,'admin','管理员','123456');
+
+drop table if exists `ebook_snapshot`;
+create table `ebook_snapshot` (
+  `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'id',
+  `ebook_id` BIGINT NOT NULL DEFAULT 0 COMMENT '电子书id',
+  `date` date NOT NULL COMMENT '日期',
+  `view_count` int COMMENT '阅读数',
+  `vote_count` int COMMENT '点赞数',
+    `view_count_increase` int COMMENT '阅读数增长',
+    `vote_count_increase` int COMMENT '点赞数增长',
+  primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电子书快照';
