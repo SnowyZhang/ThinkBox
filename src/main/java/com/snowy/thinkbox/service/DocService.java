@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.snowy.thinkbox.domain.Content;
 import com.snowy.thinkbox.domain.Doc;
 import com.snowy.thinkbox.domain.DocExample;
+import com.snowy.thinkbox.exception.BusinessException;
+import com.snowy.thinkbox.exception.BusinessExceptionCode;
 import com.snowy.thinkbox.mapper.ContentMapper;
 import com.snowy.thinkbox.mapper.DocMapper;
 import com.snowy.thinkbox.mapper.MyDocMapper;
@@ -13,6 +15,8 @@ import com.snowy.thinkbox.req.DocSaveReq;
 import com.snowy.thinkbox.resp.DocQueryResp;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
+import com.snowy.thinkbox.utils.RecordIPAddress;
+import com.snowy.thinkbox.utils.RedisUtil;
 import com.snowy.thinkbox.utils.SnowFlake;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -38,6 +42,9 @@ public class DocService {
 
     @Resource
     private MyDocMapper myDocMapper;
+
+    @Resource
+    private RedisUtil redisUtil;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq docQueryReq) {
@@ -109,6 +116,14 @@ public class DocService {
 
     public void vote(String id) {
         LOG.info("点赞id: {}", id);
-        myDocMapper.updateVoteCount(Long.valueOf(id));
+        String KEY = RecordIPAddress.getRemoteAddr();
+        if(redisUtil.validateRepeat("vote:"+id+"_"+KEY, 60)){
+            myDocMapper.updateVoteCount(Long.valueOf(id));
+            LOG.info("点赞成功");
+        }else{
+            LOG.info("点赞失败");
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
+
     }
 }
