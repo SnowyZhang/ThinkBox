@@ -36,7 +36,7 @@ public class QuartzConfig {
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)
                 .withIdentity("ebookUpdateTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0/30 * * * * ?")) // Every 30 seconds
+                .withSchedule(CronScheduleBuilder.cronSchedule("* 10 * * * ?")) // Every 30 seconds
                 .build();
     }
 
