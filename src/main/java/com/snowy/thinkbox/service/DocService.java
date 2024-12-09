@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class DocService {
     private RedisUtil redisUtil;
 
     @Resource
-    private WebSocketServer webSocketServer;
+    private KafkaProducerService kafkaProducerService;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq docQueryReq) {
@@ -72,6 +73,7 @@ public class DocService {
         return docPageResp;
     }
 
+    @Transactional
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
         Content content = CopyUtil.copy(req, Content.class);
@@ -129,14 +131,14 @@ public class DocService {
             LOG.info("点赞失败");
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
-        try {
-            Doc doc = docMapper.selectByPrimaryKey(Long.valueOf(id));
-            webSocketServer.broadcastMessage("文档《"+ doc.getName()+"》被点赞啦！");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
+//        try {
+//            Doc doc = docMapper.selectByPrimaryKey(Long.valueOf(id));
+//            webSocketServer.broadcastMessage("文档《"+ doc.getName()+"》被点赞啦！");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        Doc doc = docMapper.selectByPrimaryKey(Long.valueOf(id));
+        kafkaProducerService.sendVoteEvent("vote-topic","文档《"+ doc.getName()+"》被点赞啦！");
     }
 
     public void updateEbookInfo() {
