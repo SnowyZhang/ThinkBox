@@ -153,5 +153,7 @@ create table `ebook_snapshot` (
   `vote_count` int COMMENT '点赞数',
     `view_count_increase` int COMMENT '阅读数增长',
     `vote_count_increase` int COMMENT '点赞数增长',
-  primary key (`id`)
+  primary key (`id`),
+  unique key `ebook_id_date_unique` (`ebook_id`,`date`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电子书快照';
