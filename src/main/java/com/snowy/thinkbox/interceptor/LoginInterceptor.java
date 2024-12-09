@@ -28,6 +28,15 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        long startTime = System.currentTimeMillis();
+        request.setAttribute("requestStartTime", startTime);
+
+        // OPTIONS请求不做校验,
+        // 前后端分离的架构, 前端会发一个OPTIONS请求先做预检, 对预检请求不做校验
+        if(request.getMethod().toUpperCase().equals("OPTIONS")){
+            return true;
+        }
+
         //获取header的token参数
         String token = request.getHeader("token");
         if (token == null || token.isEmpty()) {
