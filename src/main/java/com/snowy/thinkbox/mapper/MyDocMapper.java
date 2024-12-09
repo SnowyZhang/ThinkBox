@@ -8,4 +8,5 @@ import java.util.List;
 public interface MyDocMapper {
     public void updateViewCount(@Param("id") Long id);
     public void updateVoteCount(@Param("id") Long id);
+    public void updateEbookInfo();
 }

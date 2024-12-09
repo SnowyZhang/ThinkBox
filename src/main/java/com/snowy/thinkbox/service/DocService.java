@@ -126,4 +126,8 @@ public class DocService {
         }
 
     }
+
+    public void updateEbookInfo() {
+        myDocMapper.updateEbookInfo();
+    }
 }
