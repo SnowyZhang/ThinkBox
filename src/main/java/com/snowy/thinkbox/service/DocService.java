@@ -7,6 +7,7 @@ import com.snowy.thinkbox.domain.Doc;
 import com.snowy.thinkbox.domain.DocExample;
 import com.snowy.thinkbox.mapper.ContentMapper;
 import com.snowy.thinkbox.mapper.DocMapper;
+import com.snowy.thinkbox.mapper.MyDocMapper;
 import com.snowy.thinkbox.req.DocQueryReq;
 import com.snowy.thinkbox.req.DocSaveReq;
 import com.snowy.thinkbox.resp.DocQueryResp;
@@ -35,6 +36,9 @@ public class DocService {
     @Resource
     private SnowFlake snowFlake;
 
+    @Resource
+    private MyDocMapper myDocMapper;
+
 
     public PageResp<DocQueryResp> list(DocQueryReq docQueryReq) {
         DocExample docExample = new DocExample();
@@ -62,6 +66,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
             // 新增
             doc.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -93,6 +99,7 @@ public class DocService {
 
     public  String findContent(String id) {
         Content content = contentMapper.selectByPrimaryKey(Long.valueOf(id));
+        myDocMapper.updateViewCount(Long.valueOf(id));
         //判断是否为空
         if (ObjectUtils.isEmpty(content)) {
             return "";
@@ -100,4 +107,8 @@ public class DocService {
         return content.getContent();
     }
 
+    public void vote(String id) {
+        LOG.info("点赞id: {}", id);
+        myDocMapper.updateVoteCount(Long.valueOf(id));
+    }
 }

@@ -15,7 +15,20 @@
           />
         </a-col>
         <a-col :span="18">
+          <div>
+            <h2>{{doc.name}}</h2>
+            <div>
+              <span>阅读数：{{doc.viewCount}}</span> &nbsp; &nbsp;
+              <span>点赞数：{{doc.voteCount}}</span>
+            </div>
+            <a-divider style="height: 2px; background-color: #9999cc"/>
+          </div>
           <div class="editor-content-view" v-html="contentHtml"> </div>
+          <div class="vote-div">
+            <a-button type="primary" shape="round" :size="'large'" @click="vote">
+              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
+            </a-button>
+          </div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -41,6 +54,8 @@ export default defineComponent({
     const contentHtml = ref("");
     const defaultSelectedKeys = ref();
     defaultSelectedKeys.value = [];
+    const doc = ref();
+    doc.value = { }
     // const editor = createEditor({
     //   html: '<p>hello <strong>world</strong></p>', // 从 editor.getHtml() 获取的 html 内容
     //   // 其他属性...
@@ -65,6 +80,8 @@ export default defineComponent({
           if(Tool.isNotEmpty(levelTree.value)){
             defaultSelectedKeys.value = [levelTree.value[0].id];
             handleQueryContent(levelTree.value[0].id);
+            doc.value = levelTree.value[0];
+            console.log("doc:", doc.value);
           }
 
         } else {
@@ -84,13 +101,56 @@ export default defineComponent({
       });
     };
 
-    const onSelect = (selectedKeys: any, info: any) => {
+    const onSelect = async (selectedKeys: any, info: any) => {
       console.log("selected", selectedKeys, info);
-      if(Tool.isNotEmpty(selectedKeys)){
-        console.log("selectedKeys[0]:", selectedKeys[0]);
-        handleQueryContent(selectedKeys[0]);
+
+      if (Tool.isNotEmpty(selectedKeys)) {
+        const selectedId = selectedKeys[0]; // 获取选中的文档 ID
+        console.log("selectedKeys[0]:", selectedId);
+
+        // 加载文档内容
+        await handleQueryContent(selectedId);
+
+        // 从树的节点信息中更新文档详情
+        const selectedNode = info.node; // 获取选中的节点对象
+        if (selectedNode) {
+          doc.value = {
+            id: selectedNode.id,
+            name: selectedNode.name,
+            viewCount: selectedNode.viewCount || 0,
+            voteCount: selectedNode.voteCount || 0,
+          };
+          console.log("Updated doc:", doc.value);
+        } else {
+          console.warn("未能获取选中的节点信息，文档详情未更新。");
+        }
       }
     };
+
+    const vote = () => {
+      if (!doc.value.id) {
+        message.warn("请选择一个文档后再点赞！");
+        return;
+      }
+
+      axios
+          .get('/doc/vote/' + doc.value.id)
+          .then((response) => {
+            console.log("点赞ID：", doc.value.id);
+            const data = response.data;
+            if (data.success) {
+              doc.value.voteCount++;
+              message.success("点赞成功！");
+            } else {
+              message.error(data.message);
+            }
+          })
+          .catch((error) => {
+            console.error("点赞请求失败：", error);
+            message.error("点赞失败，请稍后重试！");
+          });
+    };
+
 
     onMounted(() => {
       handleQuery();
@@ -100,7 +160,9 @@ export default defineComponent({
       levelTree,
       contentHtml,
       onSelect,
-      defaultSelectedKeys
+      defaultSelectedKeys,
+      doc,
+      vote
     };
   }
 });
@@ -108,6 +170,10 @@ export default defineComponent({
 </script>
 
 <style>
+.vote-div {
+  padding: 15px;
+  text-align: center;
+}
 .editor-content-view {
   border: 0px solid #ccc;
   border-radius: 5px;
