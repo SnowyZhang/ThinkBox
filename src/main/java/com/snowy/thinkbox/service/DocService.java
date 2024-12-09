@@ -18,6 +18,7 @@ import com.snowy.thinkbox.utils.CopyUtil;
 import com.snowy.thinkbox.utils.RecordIPAddress;
 import com.snowy.thinkbox.utils.RedisUtil;
 import com.snowy.thinkbox.utils.SnowFlake;
+import com.snowy.thinkbox.websocket.WebSocketServer;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,6 +47,9 @@ public class DocService {
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq docQueryReq) {
@@ -124,6 +129,13 @@ public class DocService {
             LOG.info("点赞失败");
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+        try {
+            Doc doc = docMapper.selectByPrimaryKey(Long.valueOf(id));
+            webSocketServer.broadcastMessage("文档《"+ doc.getName()+"》被点赞啦！");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
