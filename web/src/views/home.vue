@@ -29,8 +29,7 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <div class="welcome" v-show="showWelcome">
-        <h1>欢迎</h1>
-        <p>欢迎使用本系统</p>
+        <the-data-show></the-data-show>
       </div>
       <a-list v-show="!showWelcome" item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3 }" :pagination="pagination" :data-source="ebooks">
         <template #renderItem="{ item }">
@@ -63,9 +62,13 @@ import { UserOutlined, MailOutlined } from "@ant-design/icons-vue";
 import axios from 'axios';
 import { message } from "ant-design-vue";
 import { Tool } from "@/util/tool";
+import TheDataShow from "@/components/the-data-show.vue";
 
 export default defineComponent({
   name: 'Home',
+  components: {
+    TheDataShow
+  },
   setup() {
     const openKeys = ref([]);
     const levelTree = ref();

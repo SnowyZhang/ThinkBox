@@ -12,7 +12,7 @@
       <a-menu-item key="AdminUser" >
         <router-link to="/admin/user">用户管理 </router-link>
       </a-menu-item>
-      <a-menu-item key="AdminEbook" >
+      <a-menu-item key="AdminEbook">
         <router-link to="/admin/ebook">笔记管理</router-link>
       </a-menu-item>
       <a-menu-item key="AdminCategory" >
@@ -28,15 +28,17 @@
                 cancel-text="否"
                 @confirm="logout()"
             >
-              <a class="login-menu" v-show="user.id">
+              <a class="login-menu">
                 <span>退出登录</span>
               </a>
             </a-popconfirm>
       </a-menu-item>
-      <a-menu-item key="Login">
-          <a class="login-menu" v-show="user.id">
+      <a-menu-item key="LoginSuccess" v-if="user.id">
+          <a class="login-menu" >
             <span>您好：{{user.name}}</span>
           </a>
+      </a-menu-item>
+      <a-menu-item key="Login" v-else>
           <a class="login-menu" v-show="!user.id" @click="showLoginModal">
             <span>登录</span>
           </a>
