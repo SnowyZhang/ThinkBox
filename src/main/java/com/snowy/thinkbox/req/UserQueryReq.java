@@ -4,20 +4,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 public class UserQueryReq extends PageReq{
-    private String loginName;
+    private String email;
 
-    public String getLoginName() {
-        return loginName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override
     public String toString() {
         return "UserQueryReq{" +
-                "loginName='" + loginName + '\'' +
+                "email='" + email + '\'' +
                 "} " + super.toString();
     }
 }

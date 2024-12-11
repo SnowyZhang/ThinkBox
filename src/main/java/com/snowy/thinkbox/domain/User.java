@@ -1,33 +1,37 @@
 package com.snowy.thinkbox.domain;
 
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 public class User {
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
-    private String loginName;
+    private String email;
 
     private String name;
 
     private String password;
 
-    @JsonSerialize(using = ToStringSerializer.class)
+    private String role;
+
+    private Integer isActive;
+
     public Long getId() {
         return id;
     }
 
-    @JsonSerialize(using = ToStringSerializer.class)
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getLoginName() {
-        return loginName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -46,6 +50,22 @@ public class User {
         this.password = password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Integer getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(Integer isActive) {
+        this.isActive = isActive;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -53,9 +73,11 @@ public class User {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", loginName=").append(loginName);
+        sb.append(", email=").append(email);
         sb.append(", name=").append(name);
         sb.append(", password=").append(password);
+        sb.append(", role=").append(role);
+        sb.append(", isActive=").append(isActive);
         sb.append("]");
         return sb.toString();
     }

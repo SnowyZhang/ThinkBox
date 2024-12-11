@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.snowy.thinkbox.mapper.UserMapper">
-  <resultMap id="BaseResultMap" type="com.snowy.thinkbox.domain.User">
+<mapper namespace="com.snowy.thinkbox.mapper.UserEmailVerificationMapper">
+  <resultMap id="BaseResultMap" type="com.snowy.thinkbox.domain.UserEmailVerification">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="email" jdbcType="VARCHAR" property="email" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="role" jdbcType="CHAR" property="role" />
-    <result column="is_active" jdbcType="BIT" property="isActive" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="expires_at" jdbcType="TIMESTAMP" property="expiresAt" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -68,15 +67,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, email, `name`, `password`, `role`, is_active
+    id, user_id, token, created_at, expires_at
   </sql>
-  <select id="selectByExample" parameterType="com.snowy.thinkbox.domain.UserExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.snowy.thinkbox.domain.UserEmailVerificationExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from user
+    from user_email_verification
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -87,94 +86,85 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from user
+    from user_email_verification
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from user
+    delete from user_email_verification
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <delete id="deleteByExample" parameterType="com.snowy.thinkbox.domain.UserExample">
-    delete from user
+  <delete id="deleteByExample" parameterType="com.snowy.thinkbox.domain.UserEmailVerificationExample">
+    delete from user_email_verification
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.snowy.thinkbox.domain.User">
-    insert into user (id, email, `name`, 
-      `password`, `role`, is_active)
-    values (#{id,jdbcType=BIGINT}, #{email,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{role,jdbcType=CHAR}, #{isActive,jdbcType=BIT})
+  <insert id="insert" parameterType="com.snowy.thinkbox.domain.UserEmailVerification">
+    insert into user_email_verification (id, user_id, token, 
+      created_at, expires_at)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{token,jdbcType=VARCHAR}, 
+      #{createdAt,jdbcType=TIMESTAMP}, #{expiresAt,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.snowy.thinkbox.domain.User">
-    insert into user
+  <insert id="insertSelective" parameterType="com.snowy.thinkbox.domain.UserEmailVerification">
+    insert into user_email_verification
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
       </if>
-      <if test="email != null">
-        email,
+      <if test="userId != null">
+        user_id,
       </if>
-      <if test="name != null">
-        `name`,
+      <if test="token != null">
+        token,
       </if>
-      <if test="password != null">
-        `password`,
+      <if test="createdAt != null">
+        created_at,
       </if>
-      <if test="role != null">
-        `role`,
-      </if>
-      <if test="isActive != null">
-        is_active,
+      <if test="expiresAt != null">
+        expires_at,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="email != null">
-        #{email,jdbcType=VARCHAR},
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
       </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="role != null">
-        #{role,jdbcType=CHAR},
-      </if>
-      <if test="isActive != null">
-        #{isActive,jdbcType=BIT},
+      <if test="expiresAt != null">
+        #{expiresAt,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.snowy.thinkbox.domain.UserExample" resultType="java.lang.Long">
-    select count(*) from user
+  <select id="countByExample" parameterType="com.snowy.thinkbox.domain.UserEmailVerificationExample" resultType="java.lang.Long">
+    select count(*) from user_email_verification
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update user
+    update user_email_verification
     <set>
       <if test="row.id != null">
         id = #{row.id,jdbcType=BIGINT},
       </if>
-      <if test="row.email != null">
-        email = #{row.email,jdbcType=VARCHAR},
+      <if test="row.userId != null">
+        user_id = #{row.userId,jdbcType=BIGINT},
       </if>
-      <if test="row.name != null">
-        `name` = #{row.name,jdbcType=VARCHAR},
+      <if test="row.token != null">
+        token = #{row.token,jdbcType=VARCHAR},
       </if>
-      <if test="row.password != null">
-        `password` = #{row.password,jdbcType=VARCHAR},
+      <if test="row.createdAt != null">
+        created_at = #{row.createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="row.role != null">
-        `role` = #{row.role,jdbcType=CHAR},
-      </if>
-      <if test="row.isActive != null">
-        is_active = #{row.isActive,jdbcType=BIT},
+      <if test="row.expiresAt != null">
+        expires_at = #{row.expiresAt,jdbcType=TIMESTAMP},
       </if>
     </set>
     <if test="example != null">
@@ -182,45 +172,40 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update user
+    update user_email_verification
     set id = #{row.id,jdbcType=BIGINT},
-      email = #{row.email,jdbcType=VARCHAR},
-      `name` = #{row.name,jdbcType=VARCHAR},
-      `password` = #{row.password,jdbcType=VARCHAR},
-      `role` = #{row.role,jdbcType=CHAR},
-      is_active = #{row.isActive,jdbcType=BIT}
+      user_id = #{row.userId,jdbcType=BIGINT},
+      token = #{row.token,jdbcType=VARCHAR},
+      created_at = #{row.createdAt,jdbcType=TIMESTAMP},
+      expires_at = #{row.expiresAt,jdbcType=TIMESTAMP}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.snowy.thinkbox.domain.User">
-    update user
+  <update id="updateByPrimaryKeySelective" parameterType="com.snowy.thinkbox.domain.UserEmailVerification">
+    update user_email_verification
     <set>
-      <if test="email != null">
-        email = #{email,jdbcType=VARCHAR},
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
       </if>
-      <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
+      <if test="token != null">
+        token = #{token,jdbcType=VARCHAR},
       </if>
-      <if test="password != null">
-        `password` = #{password,jdbcType=VARCHAR},
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
       </if>
-      <if test="role != null">
-        `role` = #{role,jdbcType=CHAR},
-      </if>
-      <if test="isActive != null">
-        is_active = #{isActive,jdbcType=BIT},
+      <if test="expiresAt != null">
+        expires_at = #{expiresAt,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.snowy.thinkbox.domain.User">
-    update user
-    set email = #{email,jdbcType=VARCHAR},
-      `name` = #{name,jdbcType=VARCHAR},
-      `password` = #{password,jdbcType=VARCHAR},
-      `role` = #{role,jdbcType=CHAR},
-      is_active = #{isActive,jdbcType=BIT}
+  <update id="updateByPrimaryKey" parameterType="com.snowy.thinkbox.domain.UserEmailVerification">
+    update user_email_verification
+    set user_id = #{userId,jdbcType=BIGINT},
+      token = #{token,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      expires_at = #{expiresAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

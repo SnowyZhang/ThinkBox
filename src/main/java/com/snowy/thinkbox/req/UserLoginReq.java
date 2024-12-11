@@ -10,8 +10,8 @@ import org.hibernate.validator.constraints.Length;
 public class UserLoginReq {
 
 
-    @NotEmpty(message = "Login name cannot be empty")
-    private String loginName;
+    @NotEmpty(message = "Email cannot be empty")
+    private String email;
 
 
     @NotEmpty(message = "Password cannot be empty")
@@ -20,12 +20,12 @@ public class UserLoginReq {
     private String password;
 
 
-    public String getLoginName() {
-        return loginName;
+    public @NotEmpty(message = "Email cannot be empty") String getEmail() {
+        return email;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setEmail(@NotEmpty(message = "Email cannot be empty") String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -39,7 +39,7 @@ public class UserLoginReq {
     @Override
     public String toString() {
         return "UserLoginReq{" +
-                "loginName='" + loginName + '\'' +
+                "email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

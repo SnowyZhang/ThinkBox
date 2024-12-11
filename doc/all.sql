@@ -121,16 +121,16 @@ CREATE TABLE `content` (
 #                             FOREIGN KEY (user_id) REFERENCES users(id),  -- 外键，关联用户表
 #                             FOREIGN KEY (role_id) REFERENCES roles(id)  -- 外键，关联角色表
 # );
-# CREATE TABLE comments (
-#                           id BIGINT PRIMARY KEY,  -- 评论 ID
-#                           user_id BIGINT,  -- 评论作者（外键，关联 users 表）
-#                           doc_id BIGINT,  -- 评论的文章 ID（外键，关联 posts 表）
-#                           content TEXT NOT NULL,  -- 评论内容
-#                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间
-#                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- 更新时间
-#                           FOREIGN KEY (user_id) REFERENCES users(id),  -- 关联用户表
-#                           FOREIGN KEY (doc_id) REFERENCES doc(id)  -- 关联文档表
-# );
+CREATE TABLE comments (
+                          id BIGINT PRIMARY KEY,  -- 评论 ID
+                          user_id BIGINT,  -- 评论作者（外键，关联 users 表）
+                          doc_id BIGINT,  -- 评论的文章 ID（外键，关联 posts 表）
+                          content TEXT NOT NULL,  -- 评论内容
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 创建时间
+                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- 更新时间
+                          FOREIGN KEY (user_id) REFERENCES user(id),  -- 关联用户表
+                          FOREIGN KEY (doc_id) REFERENCES doc(id)  -- 关联文档表
+);
 
 drop table if exists `user`;
 CREATE TABLE `user` (
@@ -157,3 +157,32 @@ create table `ebook_snapshot` (
   unique key `ebook_id_date_unique` (`ebook_id`,`date`)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='电子书快照';
+
+drop table if exists `comments`;
+drop table if exists `user_email_verification`;
+drop table if exists `user`;
+CREATE TABLE `user` (
+                        `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户 ID',
+                        `email` VARCHAR(100) NOT NULL COMMENT '用户邮箱',
+                        `name` VARCHAR(50) COMMENT '名称',
+                        `password` VARCHAR(255) NOT NULL COMMENT '加密后的密码',
+                        `role` ENUM('admin', 'user') DEFAULT 'user' COMMENT '用户角色（admin 或 user）',
+                        `is_active` BOOLEAN DEFAULT FALSE COMMENT '是否激活',
+                        PRIMARY KEY (`id`),
+                        UNIQUE KEY `email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
+# 修改user.is_active字段默认值为true
+ALTER TABLE `user` MODIFY COLUMN `is_active` BOOLEAN DEFAULT FALSE COMMENT '是否激活';
+
+CREATE TABLE `user_email_verification` (
+                                           `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '记录 ID',
+                                           `user_id` BIGINT NOT NULL COMMENT '用户 ID',
+                                           `token` VARCHAR(255) NOT NULL COMMENT '邮箱验证令牌',
+                                           `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '令牌生成时间',
+                                           `expires_at` TIMESTAMP NULL COMMENT '令牌过期时间',  -- 允许为 NULL
+                                           FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户邮箱验证表';
+
+
+

@@ -13,20 +13,13 @@ public class UserLoginResp {
     private Long id;
 
     @NotNull(message = "Login name cannot be empty")
-    private String loginName;
+    private String email;
 
     @NotNull(message = "Name cannot be empty")
     private String name;
 
-    @Override
-    public String toString() {
-        return "UserLoginResp{" +
-                "token=" + token +
-                ", id=" + id +
-                ", loginName='" + loginName + '\'' +
-                ", name='" + name + '\'' +
-                '}';
-    }
+    @NotNull(message = "Role cannot be empty")
+    private String role;
 
     public String getToken() {
         return token;
@@ -46,12 +39,20 @@ public class UserLoginResp {
         this.id = id;
     }
 
-    public String getLoginName() {
-        return loginName;
+    public @NotNull(message = "Login name cannot be empty") String getEmail() {
+        return email;
     }
 
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
+    public void setEmail(@NotNull(message = "Login name cannot be empty") String email) {
+        this.email = email;
+    }
+
+    public @NotNull(message = "Role cannot be empty") String getRole() {
+        return role;
+    }
+
+    public void setRole(@NotNull(message = "Role cannot be empty") String role) {
+        this.role = role;
     }
 
     public String getName() {
@@ -62,4 +63,14 @@ public class UserLoginResp {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "UserLoginResp{" +
+                "token='" + token + '\'' +
+                ", id=" + id +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }
