@@ -13,4 +13,11 @@
     <update id="updateEbookInfo" >
         update ebook e1, (select ebook_id, count(*) doc_count, sum(view_count) view_count, sum(vote_count) vote_count from doc group by ebook_id) e2 set e1.doc_count = e2.doc_count, e1.view_count = e2.view_count, e1.vote_count = e2.vote_count where e1.id = e2.ebook_id;
     </update>
+
+    <select id="findComment"  >
+        SELECT t1.*, t2.name
+        FROM comments t1
+                 JOIN user t2 ON t1.user_id = t2.id
+        WHERE t1.doc_id = #{docID};
+    </select>
 </mapper>

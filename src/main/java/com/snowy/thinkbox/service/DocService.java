@@ -2,16 +2,18 @@ package com.snowy.thinkbox.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.snowy.thinkbox.domain.Content;
-import com.snowy.thinkbox.domain.Doc;
-import com.snowy.thinkbox.domain.DocExample;
+import com.snowy.thinkbox.domain.*;
 import com.snowy.thinkbox.exception.BusinessException;
 import com.snowy.thinkbox.exception.BusinessExceptionCode;
+import com.snowy.thinkbox.mapper.CommentsMapper;
 import com.snowy.thinkbox.mapper.ContentMapper;
 import com.snowy.thinkbox.mapper.DocMapper;
 import com.snowy.thinkbox.mapper.MyDocMapper;
+import com.snowy.thinkbox.req.CommentSaveReq;
 import com.snowy.thinkbox.req.DocQueryReq;
 import com.snowy.thinkbox.req.DocSaveReq;
+import com.snowy.thinkbox.resp.CommentsQueryResp;
+import com.snowy.thinkbox.resp.CommonResp;
 import com.snowy.thinkbox.resp.DocQueryResp;
 import com.snowy.thinkbox.resp.PageResp;
 import com.snowy.thinkbox.utils.CopyUtil;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,6 +39,9 @@ public class DocService {
     private static final Logger LOG = LoggerFactory.getLogger(DocService.class);
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private CommentsMapper commentsMapper;
 
     @Resource
     private ContentMapper contentMapper;
@@ -120,6 +126,18 @@ public class DocService {
         }
         return content.getContent();
     }
+    public  List<CommentsQueryResp> findComment(String doc_id) {
+
+        List<CommentsQueryResp> commentsList = myDocMapper.findComment(Long.valueOf(doc_id));
+        if(commentsList.isEmpty()){
+            LOG.info("评论为空");
+            return commentsList;
+        }else{
+            LOG.info("评论不为空");
+            return commentsList;
+        }
+
+    }
 
     public void vote(String id) {
         LOG.info("点赞id: {}", id);
@@ -143,5 +161,27 @@ public class DocService {
 
     public void updateEbookInfo() {
         myDocMapper.updateEbookInfo();
+    }
+
+    public void saveComment(@Valid CommentSaveReq req) {
+        Comments comment = CopyUtil.copy(req, Comments.class);
+        if (ObjectUtils.isEmpty(req.getId())) {
+            // 新增
+            comment.setId(snowFlake.nextId());//生成id的方法:自增,UUID,雪花算法...这里使用雪花算法
+            comment.setDocId(req.getDocId());
+            comment.setUserId(req.getUserId());
+            comment.setContent(req.getContent());
+            Date createdAt = new Date();
+            comment.setCreatedAt(createdAt);
+            commentsMapper.insert(comment);
+        }else{
+            //更新
+            comment.setUpdatedAt(new Date());
+            commentsMapper.updateByPrimaryKey(comment);
+            int count = commentsMapper.updateByPrimaryKey(comment);
+            if (count == 0) {
+                commentsMapper.insert(comment);
+            }
+        }
     }
 }

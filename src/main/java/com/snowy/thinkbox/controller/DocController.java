@@ -1,7 +1,10 @@
 package com.snowy.thinkbox.controller;
 
+import com.snowy.thinkbox.domain.Comments;
+import com.snowy.thinkbox.req.CommentSaveReq;
 import com.snowy.thinkbox.req.DocQueryReq;
 import com.snowy.thinkbox.req.DocSaveReq;
+import com.snowy.thinkbox.resp.CommentsQueryResp;
 import com.snowy.thinkbox.resp.DocQueryResp;
 import com.snowy.thinkbox.resp.CommonResp;
 import com.snowy.thinkbox.resp.PageResp;
@@ -42,6 +45,14 @@ public class DocController {
         return resp;
     }
 
+    @PostMapping("/save")
+    public CommonResp saveComment(@RequestBody @Valid CommentSaveReq req){  //RequestBody对应前端传来的json数据;如果是form表单提交的数据，用@RequestParam
+        CommonResp resp = new CommonResp<>();
+        docService.saveComment(req);
+        return resp;
+    }
+
+
     /*
      * 在SpringMVC中,@PathVariable可以用来映射URL中的占位符到目标方法的参数中.大括号用于声明占位符,占位符的名称必顫和@RequestMapping中的名称一致.
      * 而在Spring的其他地方,比如Spring EL表达式中,占位符是用${}来声明的,用于表示引用变量或表达式
@@ -59,6 +70,14 @@ public class DocController {
         CommonResp<String> resp = new CommonResp<>();
         String content = docService.findContent(id);
         resp.setContent(content);
+        return resp;
+    }
+
+    @GetMapping("/comments/{id}")
+    public CommonResp findComment(@PathVariable String id){
+        CommonResp<List<CommentsQueryResp>> resp = new CommonResp<>();
+        List<CommentsQueryResp> list= docService.findComment(id);
+        resp.setContent(list);
         return resp;
     }
 
